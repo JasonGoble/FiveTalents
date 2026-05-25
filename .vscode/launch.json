@@ -30,6 +30,15 @@
       "processName": "FiveTalents.Api"
     },
     {
+      "name": "Docker Lab: Full Stack",
+      "type": "chrome",
+      "request": "launch",
+      "preLaunchTask": "start: docker compose (lab)",
+      "postDebugTask": "stop: docker compose (lab)",
+      "url": "http://192.168.100.40:4201",
+      "webRoot": "${workspaceFolder}/web/five-talents-web/src"
+    },
+    {
       "name": "Angular: Serve + Chrome",
       "type": "chrome",
       "request": "launch",

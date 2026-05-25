@@ -71,6 +71,31 @@
       "group": "build"
     },
     {
+      "label": "start: docker compose (lab)",
+      "type": "shell",
+      "command": "docker --context lab-docker compose -f docker-compose.yml -f docker-compose.lab.yml up --build",
+      "options": { "cwd": "${workspaceFolder}" },
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "docker-compose-lab",
+        "pattern": { "regexp": "^$" },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^(Building|Pulling|Starting|Creating|Recreating)",
+          "endsPattern": "start worker processes"
+        }
+      },
+      "presentation": { "reveal": "always", "panel": "dedicated", "group": "servers" }
+    },
+    {
+      "label": "stop: docker compose (lab)",
+      "type": "shell",
+      "command": "docker --context lab-docker compose -f docker-compose.yml -f docker-compose.lab.yml down",
+      "options": { "cwd": "${workspaceFolder}" },
+      "presentation": { "reveal": "silent", "panel": "shared" },
+      "problemMatcher": []
+    },
+    {
       "label": "serve: angular",
       "type": "shell",
       "command": "npm run start",
