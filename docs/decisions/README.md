@@ -21,6 +21,7 @@ Each ADR is numbered sequentially and never edited after acceptance. If a decisi
 | [0011](0011-project-rename-churchmanager-to-fivetalents.md) | Project Rename — ChurchManager → FiveTalents | Accepted |
 | [0012](0012-contact-type-lookup-table.md) | ContactType Lookup Table for Member Contact Info | Accepted |
 | [0013](0013-component-file-separation.md) | Angular Component File Separation | Accepted |
+| [0014](0014-organization-scoped-configuration.md) | Organization-Scoped Configuration and the Org-First Feature Model | Accepted |
 
 ## Template
 
