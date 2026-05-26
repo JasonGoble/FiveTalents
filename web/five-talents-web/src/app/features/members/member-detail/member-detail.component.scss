@@ -45,6 +45,18 @@ mat-card-content { padding-top: 8px; }
 .address-block { padding: 4px 0; }
 .empty-hint { color: #888; font-size: 14px; padding: 4px 0; margin: 0; }
 
+.card-header-action { margin-left: auto; }
+.family-row {
+  display: flex; align-items: center; gap: 12px; padding: 6px 0;
+  border-bottom: 1px solid #f0f0f0;
+  &:last-child { border-bottom: none; }
+}
+.family-link {
+  flex: 1; font-weight: 500; color: var(--color-midnight);
+  text-decoration: none;
+  &:hover { text-decoration: underline; }
+}
+
 @media (max-width: 767px) {
   .cards-grid { grid-template-columns: 1fr; }
   .detail-grid { grid-template-columns: 120px 1fr; }

@@ -2,6 +2,7 @@ using FiveTalents.Domain.Attendance;
 using FiveTalents.Domain.Auth;
 using FiveTalents.Domain.Communication;
 using FiveTalents.Domain.Events;
+using FiveTalents.Domain.Families;
 using FiveTalents.Domain.Giving;
 using FiveTalents.Domain.Groups;
 using FiveTalents.Domain.Members;
@@ -18,7 +19,9 @@ public interface IApplicationDbContext
     DbSet<OrganizationLevel> OrganizationLevels { get; }
     DbSet<OrganizationSettings> OrganizationSettings { get; }
     DbSet<Member> Members { get; }
-    DbSet<MemberFamily> MemberFamilies { get; }
+    DbSet<Family> Families { get; }
+    DbSet<FamilyRole> FamilyRoles { get; }
+    DbSet<FamilyMember> FamilyMembers { get; }
     DbSet<MemberTag> MemberTags { get; }
     DbSet<ContactType> ContactTypes { get; }
     DbSet<MemberAddress> MemberAddresses { get; }

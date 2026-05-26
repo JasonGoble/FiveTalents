@@ -3,6 +3,7 @@ using FiveTalents.Domain.Attendance;
 using FiveTalents.Domain.Auth;
 using FiveTalents.Domain.Communication;
 using FiveTalents.Domain.Events;
+using FiveTalents.Domain.Families;
 using FiveTalents.Domain.Giving;
 using FiveTalents.Domain.Groups;
 using FiveTalents.Domain.Members;
@@ -22,7 +23,9 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<OrganizationLevel> OrganizationLevels => Set<OrganizationLevel>();
     public DbSet<OrganizationSettings> OrganizationSettings => Set<OrganizationSettings>();
     public DbSet<Member> Members => Set<Member>();
-    public DbSet<MemberFamily> MemberFamilies => Set<MemberFamily>();
+    public DbSet<Family> Families => Set<Family>();
+    public DbSet<FamilyRole> FamilyRoles => Set<FamilyRole>();
+    public DbSet<FamilyMember> FamilyMembers => Set<FamilyMember>();
     public DbSet<MemberTag> MemberTags => Set<MemberTag>();
     public DbSet<ContactType> ContactTypes => Set<ContactType>();
     public DbSet<MemberAddress> MemberAddresses => Set<MemberAddress>();
@@ -133,6 +136,31 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             new ContactType { Id = 10, Category = ContactTypeCategory.Phone,   Name = "Mobile",   SortOrder = 30, IsActive = true, CreatedAt = seedDate },
             new ContactType { Id = 11, Category = ContactTypeCategory.Phone,   Name = "Other",    SortOrder = 40, IsActive = true, CreatedAt = seedDate }
         );
+
+        // Family relationships
+        builder.Entity<Family>().HasQueryFilter(f => !f.IsDeleted);
+
+        builder.Entity<FamilyMember>()
+            .HasOne(fm => fm.Family)
+            .WithMany(f => f.Members)
+            .HasForeignKey(fm => fm.FamilyId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Entity<FamilyMember>()
+            .HasOne(fm => fm.Member)
+            .WithMany(m => m.Families)
+            .HasForeignKey(fm => fm.MemberId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Entity<FamilyMember>()
+            .HasOne(fm => fm.Role)
+            .WithMany(r => r.FamilyMembers)
+            .HasForeignKey(fm => fm.FamilyRoleId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<FamilyMember>()
+            .HasIndex(fm => new { fm.FamilyId, fm.MemberId })
+            .IsUnique();
 
         // MemberAddress / MemberEmail / MemberPhone cascade-delete with member
         builder.Entity<MemberAddress>()

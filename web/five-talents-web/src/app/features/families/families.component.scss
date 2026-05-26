@@ -1,0 +1,22 @@
+.search-field { width: 220px; }
+.spinner-wrap { display: flex; justify-content: center; padding: 40px; }
+.empty-state { text-align: center; color: var(--color-slate); padding: 40px 0; }
+.full-width-table { width: 100%; }
+.actions-cell { text-align: right; white-space: nowrap; }
+.clickable-row { cursor: pointer; }
+.clickable-row:hover { background: #f5f7fa; }
+.family-link { color: var(--color-midnight); text-decoration: none; font-weight: 500; }
+.family-link:hover { text-decoration: underline; }
+.member-count { font-size: 13px; color: var(--color-slate); }
+
+.mobile-card-list { display: flex; flex-direction: column; gap: 8px; }
+.item-card {
+  background: #fff; border-radius: 8px; padding: 14px 16px;
+  box-shadow: 0 1px 4px rgba(31,42,68,0.07); cursor: pointer;
+  display: flex; flex-direction: column; gap: 4px;
+  transition: box-shadow 0.15s;
+}
+.item-card:hover { box-shadow: 0 2px 8px rgba(31,42,68,0.12); }
+.item-card-main { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.item-name { font-weight: 500; font-size: 15px; color: var(--color-midnight); }
+.item-card-actions { display: flex; justify-content: flex-end; margin-top: 2px; }

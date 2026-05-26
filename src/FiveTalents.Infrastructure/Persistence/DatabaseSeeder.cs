@@ -1,4 +1,5 @@
 using FiveTalents.Domain.Auth;
+using FiveTalents.Domain.Families;
 using FiveTalents.Domain.Organizations;
 using FiveTalents.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
@@ -52,6 +53,18 @@ public static class DatabaseSeeder
                 IsActive = true,
                 TimeZone = "America/Chicago"
             });
+            await db.SaveChangesAsync();
+        }
+
+        // Seed default family roles
+        if (!await db.FamilyRoles.AnyAsync())
+        {
+            var org = await db.Organizations.FirstAsync();
+            db.FamilyRoles.AddRange(
+                new FamilyRole { OrganizationId = org.Id, Name = "Adult",  IsAdult = true,  SortOrder = 10, IsActive = true },
+                new FamilyRole { OrganizationId = org.Id, Name = "Child",  IsAdult = false, SortOrder = 20, IsActive = true },
+                new FamilyRole { OrganizationId = org.Id, Name = "Other",  IsAdult = true,  SortOrder = 99, IsActive = true }
+            );
             await db.SaveChangesAsync();
         }
 

@@ -1,4 +1,5 @@
 using FiveTalents.Domain.Common;
+using FiveTalents.Domain.Families;
 
 namespace FiveTalents.Domain.Members;
 
@@ -28,8 +29,7 @@ public class Member : AuditableEntity
     public bool SharePhoneWithNetwork { get; set; } = false;
     public bool ShareEmailWithNetwork { get; set; } = false;
     public bool ShareAddressWithNetwork { get; set; } = false;
-    public int? FamilyId { get; set; }
-    public MemberFamily? Family { get; set; }
+    public ICollection<FamilyMember> Families { get; set; } = [];
     public ICollection<MemberTag> Tags { get; set; } = [];
     public ICollection<MemberAddress> Addresses { get; set; } = [];
     public ICollection<MemberEmail> Emails { get; set; } = [];
