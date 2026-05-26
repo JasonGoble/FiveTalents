@@ -1,0 +1,28 @@
+meta {
+  name: Add Member to Family - Family Not Found
+  type: http
+  seq: 17
+}
+
+post {
+  url: {{baseUrl}}/api/families/999999/members
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{authToken}}
+}
+
+body:json {
+  {
+    "memberId": 1,
+    "roleId": 1
+  }
+}
+
+tests {
+  test("status 404", function() {
+    expect(res.status).to.equal(404);
+  });
+}

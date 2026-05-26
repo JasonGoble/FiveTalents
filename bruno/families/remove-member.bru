@@ -1,0 +1,21 @@
+meta {
+  name: Remove Member from Family
+  type: http
+  seq: 21
+}
+
+delete {
+  url: {{baseUrl}}/api/families/{{familyId}}/members/{{memberId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{authToken}}
+}
+
+tests {
+  test("status 204", function() {
+    expect(res.status).to.equal(204);
+  });
+}

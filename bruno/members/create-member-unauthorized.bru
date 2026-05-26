@@ -1,0 +1,25 @@
+meta {
+  name: Create Member - No Token
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{baseUrl}}/api/members
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "organizationId": {{organizationId}},
+    "firstName": "Test",
+    "lastName": "Member"
+  }
+}
+
+tests {
+  test("status 401", function() {
+    expect(res.status).to.equal(401);
+  });
+}

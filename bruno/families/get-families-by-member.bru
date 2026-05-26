@@ -1,0 +1,25 @@
+meta {
+  name: Get Families by Member
+  type: http
+  seq: 13
+}
+
+get {
+  url: {{baseUrl}}/api/families/member/{{memberId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{authToken}}
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("returns array", function() {
+    expect(res.body).to.be.an("array");
+  });
+}

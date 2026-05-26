@@ -1,0 +1,17 @@
+meta {
+  name: Get Family by ID - No Token
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{baseUrl}}/api/families/{{familyId}}
+  body: none
+  auth: none
+}
+
+tests {
+  test("status 401", function() {
+    expect(res.status).to.equal(401);
+  });
+}

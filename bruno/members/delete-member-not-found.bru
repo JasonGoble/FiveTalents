@@ -1,0 +1,21 @@
+meta {
+  name: Delete Member - Not Found
+  type: http
+  seq: 21
+}
+
+delete {
+  url: {{baseUrl}}/api/members/999999
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{authToken}}
+}
+
+tests {
+  test("status 404", function() {
+    expect(res.status).to.equal(404);
+  });
+}

@@ -1,0 +1,24 @@
+meta {
+  name: Add Member to Family - No Token
+  type: http
+  seq: 18
+}
+
+post {
+  url: {{baseUrl}}/api/families/{{familyId}}/members
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "memberId": 1,
+    "roleId": 1
+  }
+}
+
+tests {
+  test("status 401", function() {
+    expect(res.status).to.equal(401);
+  });
+}

@@ -1,0 +1,21 @@
+meta {
+  name: Get Family by ID - Not Found
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/api/families/999999
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{authToken}}
+}
+
+tests {
+  test("status 404", function() {
+    expect(res.status).to.equal(404);
+  });
+}

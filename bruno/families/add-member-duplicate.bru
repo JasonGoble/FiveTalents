@@ -1,0 +1,28 @@
+meta {
+  name: Add Member to Family - Duplicate
+  type: http
+  seq: 16
+}
+
+post {
+  url: {{baseUrl}}/api/families/{{familyId}}/members
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{authToken}}
+}
+
+body:json {
+  {
+    "memberId": {{memberId}},
+    "roleId": 1
+  }
+}
+
+tests {
+  test("status 400 or 409", function() {
+    expect([400, 409]).to.include(res.status);
+  });
+}

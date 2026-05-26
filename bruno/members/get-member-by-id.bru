@@ -1,0 +1,27 @@
+meta {
+  name: Get Member by ID
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/api/members/{{memberId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{authToken}}
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("has id, firstName, lastName", function() {
+    expect(res.body).to.have.property("id");
+    expect(res.body).to.have.property("firstName");
+    expect(res.body).to.have.property("lastName");
+  });
+}

@@ -1,0 +1,27 @@
+meta {
+  name: Move Member to Organization - Non-Admin Forbidden
+  type: http
+  seq: 19
+}
+
+put {
+  url: {{baseUrl}}/api/members/{{memberId}}/organization
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{nonAdminToken}}
+}
+
+body:json {
+  {
+    "organizationId": 2
+  }
+}
+
+tests {
+  test("status 401 or 403", function() {
+    expect([401, 403]).to.include(res.status);
+  });
+}

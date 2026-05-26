@@ -1,0 +1,27 @@
+meta {
+  name: Create Family - Missing Name
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{baseUrl}}/api/families
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{authToken}}
+}
+
+body:json {
+  {
+    "organizationId": {{organizationId}}
+  }
+}
+
+tests {
+  test("status 400", function() {
+    expect(res.status).to.equal(400);
+  });
+}

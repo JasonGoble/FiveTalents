@@ -1,0 +1,21 @@
+meta {
+  name: Get Member by ID - Not Found
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/api/members/999999
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{authToken}}
+}
+
+tests {
+  test("status 404", function() {
+    expect(res.status).to.equal(404);
+  });
+}

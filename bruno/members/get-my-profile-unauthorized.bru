@@ -1,0 +1,17 @@
+meta {
+  name: Get My Profile - No Token
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{baseUrl}}/api/members/me
+  body: none
+  auth: none
+}
+
+tests {
+  test("status 401", function() {
+    expect(res.status).to.equal(401);
+  });
+}

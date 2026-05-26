@@ -1,0 +1,21 @@
+meta {
+  name: Get Families
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/families?organizationId={{organizationId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{authToken}}
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+}

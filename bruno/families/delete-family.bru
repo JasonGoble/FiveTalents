@@ -1,0 +1,21 @@
+meta {
+  name: Delete Family
+  type: http
+  seq: 25
+}
+
+delete {
+  url: {{baseUrl}}/api/families/{{familyId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{authToken}}
+}
+
+tests {
+  test("status 204", function() {
+    expect(res.status).to.equal(204);
+  });
+}

@@ -1,0 +1,27 @@
+meta {
+  name: Update Member Role in Family
+  type: http
+  seq: 19
+}
+
+put {
+  url: {{baseUrl}}/api/families/{{familyId}}/members/{{memberId}}/role
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{authToken}}
+}
+
+body:json {
+  {
+    "roleId": 2
+  }
+}
+
+tests {
+  test("status 204", function() {
+    expect(res.status).to.equal(204);
+  });
+}

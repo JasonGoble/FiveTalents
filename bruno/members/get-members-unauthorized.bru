@@ -1,0 +1,17 @@
+meta {
+  name: Get Members - No Token
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/members?organizationId={{organizationId}}
+  body: none
+  auth: none
+}
+
+tests {
+  test("status 401", function() {
+    expect(res.status).to.equal(401);
+  });
+}

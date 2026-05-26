@@ -1,0 +1,27 @@
+meta {
+  name: Move Member to Organization (Admin)
+  type: http
+  seq: 18
+}
+
+put {
+  url: {{baseUrl}}/api/members/{{memberId}}/organization
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{authToken}}
+}
+
+body:json {
+  {
+    "organizationId": {{organizationId}}
+  }
+}
+
+tests {
+  test("status 204", function() {
+    expect(res.status).to.equal(204);
+  });
+}
