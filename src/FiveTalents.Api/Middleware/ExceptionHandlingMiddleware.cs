@@ -25,6 +25,7 @@ public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Exception
             ValidationException ve => (StatusCodes.Status400BadRequest, "Validation Error", (object)ve.Errors),
             NotFoundException nfe => (StatusCodes.Status404NotFound, "Not Found", (object)new { message = nfe.Message }),
             ForbiddenAccessException => (StatusCodes.Status403Forbidden, "Forbidden", (object)new { message = "Access denied" }),
+            InvalidOperationException ioe => (StatusCodes.Status400BadRequest, "Bad Request", (object)new { message = ioe.Message }),
             _ => (StatusCodes.Status500InternalServerError, "Internal Server Error", (object)new { message = "An unexpected error occurred" })
         };
 

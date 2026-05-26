@@ -1,5 +1,6 @@
 using FiveTalents.Application.Common.Interfaces;
 using FiveTalents.Domain.Auth;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using FiveTalents.Infrastructure.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -55,7 +56,7 @@ public class AuthController(
     }
 
     [HttpPost("change-password")]
-    [Authorize]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
     {
         var user = await userManager.GetUserAsync(User);
