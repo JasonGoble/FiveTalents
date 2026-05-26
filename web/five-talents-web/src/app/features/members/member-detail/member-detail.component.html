@@ -113,6 +113,33 @@
       </mat-card-content>
     </mat-card>
 
+    <!-- Families -->
+    <mat-card style="grid-column:1/-1">
+      <mat-card-header>
+        <mat-card-title>Families</mat-card-title>
+        <div class="card-header-action">
+          <button mat-stroked-button (click)="openJoinFamily(m)">
+            <mat-icon>group_add</mat-icon> Add to Family
+          </button>
+        </div>
+      </mat-card-header>
+      <mat-card-content>
+        @if (families().length === 0) {
+          <p class="empty-hint">Not a member of any family.</p>
+        } @else {
+          @for (f of families(); track f.familyId) {
+            <div class="family-row">
+              <a [routerLink]="['/families', f.familyId]" class="family-link">{{ f.familyName }}</a>
+              <span class="contact-type">{{ f.roleName }}</span>
+              <button mat-icon-button color="warn" (click)="leaveFamily(m, f)" matTooltip="Remove from family">
+                <mat-icon>group_remove</mat-icon>
+              </button>
+            </div>
+          }
+        }
+      </mat-card-content>
+    </mat-card>
+
     <mat-card>
       <mat-card-header><mat-card-title>Account</mat-card-title></mat-card-header>
       <mat-card-content>

@@ -39,6 +39,7 @@ FiveTalents/
 |--------|--------|
 | Organizations | ✅ Hierarchy tree with settings |
 | Members | ✅ Profiles, multiple addresses/emails/phones (typed + primary flag), privacy controls, user account linking & invites, admin-only status & org management (move between orgs) |
+| Families | ✅ Family grouping with customizable roles (adult/child flag), membership management from both family and member views |
 | Groups & Ministries | ✅ Types, leaders, schedules, capacity |
 | User Accounts | ✅ JWT auth, end-to-end invite & account setup flow, My Profile page |
 | Attendance | 🔲 Planned |
@@ -191,7 +192,7 @@ The fix is a catch-all rewrite rule that sends every unmatched path to `index.ht
 
 - **Clean Architecture** — dependency flow is strictly Domain → Application → Infrastructure/API.
 - **CQRS via MediatR** — every read is a `Query`, every write is a `Command`; no business logic in controllers.
-- **Soft deletes** — `Member`, `Group`, `GroupType`, `Sermon`, and `ChurchEvent` use an `IsDeleted` flag with a global EF query filter.
+- **Soft deletes** — `Member`, `Group`, `GroupType`, `Family`, `Sermon`, and `ChurchEvent` use an `IsDeleted` flag with a global EF query filter.
 - **Auditing** — all entities inherit from `AuditableEntity` which stamps `CreatedAt` / `UpdatedAt` and scopes records to an `OrganizationId`.
 - **String enums** — the API serializes all enums as strings (`JsonStringEnumConverter`).
 - **Angular signals** — all component state uses `signal()` / `computed()`; no `BehaviorSubject` or manual change detection.

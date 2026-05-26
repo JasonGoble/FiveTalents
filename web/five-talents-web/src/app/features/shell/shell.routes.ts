@@ -10,6 +10,8 @@ export const SHELL_ROUTES: Routes = [
       { path: 'members/:id', loadComponent: () => import('../members/member-detail/member-detail.component').then(m => m.MemberDetailComponent) },
       { path: 'members/:id/edit', loadComponent: () => import('../members/member-form/member-form.component').then(m => m.MemberFormComponent) },
       { path: 'groups', loadComponent: () => import('../groups/groups.component').then(m => m.GroupsComponent) },
+      { path: 'families', loadComponent: () => import('../families/families.component').then(m => m.FamiliesComponent) },
+      { path: 'families/:id', loadComponent: () => import('../families/family-detail/family-detail.component').then(m => m.FamilyDetailComponent) },
       { path: 'attendance', loadComponent: () => import('../attendance/attendance.component').then(m => m.AttendanceComponent) },
       { path: 'giving', loadComponent: () => import('../giving/giving.component').then(m => m.GivingComponent) },
       { path: 'events', loadComponent: () => import('../events/events.component').then(m => m.EventsComponent) },
