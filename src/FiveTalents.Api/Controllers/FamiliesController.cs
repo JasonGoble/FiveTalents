@@ -22,7 +22,7 @@ public class FamiliesController : BaseController
     public async Task<IActionResult> Create([FromBody] CreateFamilyCommand command, CancellationToken ct)
     {
         var id = await Mediator.Send(command, ct);
-        return CreatedAtAction(nameof(GetById), new { id }, null);
+        return CreatedAtAction(nameof(GetById), new { id }, new { id });
     }
 
     [HttpPut("{id}")]
