@@ -1,0 +1,40 @@
+meta {
+  name: Update Member
+  type: http
+  seq: 10
+}
+
+put {
+  url: {{baseUrl}}/api/members/{{memberId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{authToken}}
+}
+
+body:json {
+  {
+    "id": {{memberId}},
+    "firstName": "Updated",
+    "lastName": "Member",
+    "dateOfBirth": "1990-01-15T00:00:00Z",
+    "joinDate": "2024-01-01T00:00:00Z",
+    "gender": "Male",
+    "maritalStatus": "Single",
+    "status": "Active",
+    "notes": null,
+    "addresses": [],
+    "emails": [
+      { "contactTypeId": 5, "email": "testmember+{{$timestamp}}@example.com", "isPrimary": true }
+    ],
+    "phones": []
+  }
+}
+
+tests {
+  test("status 204", function() {
+    expect(res.status).to.equal(204);
+  });
+}

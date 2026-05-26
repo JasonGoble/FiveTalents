@@ -1,0 +1,25 @@
+meta {
+  name: Get Family by ID
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/api/families/{{familyId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{authToken}}
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("has members array", function() {
+    expect(res.body).to.have.property("members");
+  });
+}

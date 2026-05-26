@@ -1,0 +1,17 @@
+meta {
+  name: Delete Family - No Token
+  type: http
+  seq: 23
+}
+
+delete {
+  url: {{baseUrl}}/api/families/{{familyId}}
+  body: none
+  auth: none
+}
+
+tests {
+  test("status 401", function() {
+    expect(res.status).to.equal(401);
+  });
+}

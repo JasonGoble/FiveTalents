@@ -1,0 +1,27 @@
+meta {
+  name: Link User to Member (Admin)
+  type: http
+  seq: 13
+}
+
+post {
+  url: {{baseUrl}}/api/members/{{memberId}}/link-user
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{authToken}}
+}
+
+body:json {
+  {
+    "userId": "{{adminUserId}}"
+  }
+}
+
+tests {
+  test("status 204", function() {
+    expect(res.status).to.equal(204);
+  });
+}

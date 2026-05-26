@@ -1,0 +1,28 @@
+meta {
+  name: Update Family
+  type: http
+  seq: 10
+}
+
+put {
+  url: {{baseUrl}}/api/families/{{familyId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{authToken}}
+}
+
+body:json {
+  {
+    "id": {{familyId}},
+    "name": "Updated Family Name"
+  }
+}
+
+tests {
+  test("status 204", function() {
+    expect(res.status).to.equal(204);
+  });
+}

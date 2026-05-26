@@ -1,0 +1,28 @@
+meta {
+  name: Get Family Roles
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/family-roles?organizationId={{organizationId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{authToken}}
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("returns Adult, Child, Other", function() {
+    const names = res.body.map(r => r.name);
+    expect(names).to.include("Adult");
+    expect(names).to.include("Child");
+    expect(names).to.include("Other");
+  });
+}

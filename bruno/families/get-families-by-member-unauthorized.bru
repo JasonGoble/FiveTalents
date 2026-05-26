@@ -1,0 +1,17 @@
+meta {
+  name: Get Families by Member - No Token
+  type: http
+  seq: 14
+}
+
+get {
+  url: {{baseUrl}}/api/families/member/{{memberId}}
+  body: none
+  auth: none
+}
+
+tests {
+  test("status 401", function() {
+    expect(res.status).to.equal(401);
+  });
+}

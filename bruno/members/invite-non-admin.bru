@@ -1,0 +1,27 @@
+meta {
+  name: Send Invite - Non-Admin Forbidden
+  type: http
+  seq: 17
+}
+
+post {
+  url: {{baseUrl}}/api/members/{{memberId}}/invite
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{nonAdminToken}}
+}
+
+body:json {
+  {
+    "acceptBaseUrl": "http://localhost:4200"
+  }
+}
+
+tests {
+  test("status 401 or 403", function() {
+    expect([401, 403]).to.include(res.status);
+  });
+}

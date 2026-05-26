@@ -1,0 +1,28 @@
+meta {
+  name: Update Family - Not Found
+  type: http
+  seq: 11
+}
+
+put {
+  url: {{baseUrl}}/api/families/999999
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{authToken}}
+}
+
+body:json {
+  {
+    "id": 999999,
+    "name": "Ghost Family"
+  }
+}
+
+tests {
+  test("status 404", function() {
+    expect(res.status).to.equal(404);
+  });
+}

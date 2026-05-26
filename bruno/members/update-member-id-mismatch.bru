@@ -1,0 +1,30 @@
+meta {
+  name: Update Member - ID Mismatch
+  type: http
+  seq: 11
+}
+
+put {
+  url: {{baseUrl}}/api/members/{{memberId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{authToken}}
+}
+
+body:json {
+  {
+    "id": 999,
+    "firstName": "Test",
+    "lastName": "Mismatch",
+    "status": "Active"
+  }
+}
+
+tests {
+  test("status 400", function() {
+    expect(res.status).to.equal(400);
+  });
+}

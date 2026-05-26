@@ -1,0 +1,27 @@
+meta {
+  name: Send Invite to Member (Admin)
+  type: http
+  seq: 16
+}
+
+post {
+  url: {{baseUrl}}/api/members/{{memberId}}/invite
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{authToken}}
+}
+
+body:json {
+  {
+    "acceptBaseUrl": "http://localhost:4200"
+  }
+}
+
+tests {
+  test("status 204", function() {
+    expect(res.status).to.equal(204);
+  });
+}

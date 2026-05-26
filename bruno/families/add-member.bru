@@ -1,0 +1,28 @@
+meta {
+  name: Add Member to Family
+  type: http
+  seq: 15
+}
+
+post {
+  url: {{baseUrl}}/api/families/{{familyId}}/members
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{authToken}}
+}
+
+body:json {
+  {
+    "memberId": {{memberId}},
+    "roleId": 1
+  }
+}
+
+tests {
+  test("status 204", function() {
+    expect(res.status).to.equal(204);
+  });
+}

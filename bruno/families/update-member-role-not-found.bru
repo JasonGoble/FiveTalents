@@ -1,0 +1,27 @@
+meta {
+  name: Update Member Role - Membership Not Found
+  type: http
+  seq: 20
+}
+
+put {
+  url: {{baseUrl}}/api/families/1/members/999999/role
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{authToken}}
+}
+
+body:json {
+  {
+    "roleId": 1
+  }
+}
+
+tests {
+  test("status 404", function() {
+    expect(res.status).to.equal(404);
+  });
+}

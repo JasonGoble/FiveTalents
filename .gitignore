@@ -47,5 +47,10 @@ desktop.ini
 .idea/
 *.sln.iml
 
+# ===== Bruno =====
+# Secret variable values are never written to disk by Bruno, but ignore
+# any local environment overrides just in case
+bruno/.env
+
 # ===== Claude Code =====
 .claude/

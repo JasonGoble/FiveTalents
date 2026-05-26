@@ -50,6 +50,8 @@ mailpit                                    # UI at http://localhost:8025
 | `bug:` | `bug` |
 | `chore:` | `chore` |
 
+Every issue — regardless of type — must also have at least one `area:` label (e.g. `area:members`, `area:families`, `area:groups`). Apply this when creating or triaging issues.
+
 **Bug issue body structure:** Symptom → Root Cause → Fix → Fixed In (commit SHA)
 
 Create a GitHub issue for **every** reported defect, even small ones. The value is the cumulative searchable record linking symptoms to commits.
@@ -60,8 +62,9 @@ Before staging, explicitly ask:
 
 1. **README.md** — does this change anything in the features table or architecture notes? If yes, update it in the same commit.
 2. **docs/decisions/** — does this introduce or close a meaningful architectural or policy decision? If yes, add a new numbered ADR and update `docs/decisions/README.md`. ADRs are never edited after acceptance — superseded decisions get a new ADR.
+3. **Bruno collection** — does this add or change any API endpoints? If yes, create or update the corresponding `.bru` request files in `bruno/` in the same commit.
 
-A commit with no doc updates is fine, but the check must be deliberate, not skipped.
+A commit with no doc or test updates is fine, but the check must be deliberate, not skipped.
 
 ## Key Technical Gotchas
 

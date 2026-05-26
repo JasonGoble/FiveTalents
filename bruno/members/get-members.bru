@@ -1,0 +1,26 @@
+meta {
+  name: Get Members
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/members?organizationId={{organizationId}}&page=1&pageSize=25
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{authToken}}
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("paginated result", function() {
+    expect(res.body).to.have.property("items");
+    expect(res.body).to.have.property("totalCount");
+  });
+}

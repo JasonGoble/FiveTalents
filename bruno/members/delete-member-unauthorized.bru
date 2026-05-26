@@ -1,0 +1,17 @@
+meta {
+  name: Delete Member - No Token
+  type: http
+  seq: 20
+}
+
+delete {
+  url: {{baseUrl}}/api/members/{{memberId}}
+  body: none
+  auth: none
+}
+
+tests {
+  test("status 401", function() {
+    expect(res.status).to.equal(401);
+  });
+}

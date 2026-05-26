@@ -1,0 +1,34 @@
+meta {
+  name: Create Family
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/families
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{authToken}}
+}
+
+body:json {
+  {
+    "name": "Test Family",
+    "organizationId": {{organizationId}}
+  }
+}
+
+script:post-response {
+  if (res.status === 201) {
+    bru.setEnvVar("familyId", String(res.body.id));
+  }
+}
+
+tests {
+  test("status 201", function() {
+    expect(res.status).to.equal(201);
+  });
+}
