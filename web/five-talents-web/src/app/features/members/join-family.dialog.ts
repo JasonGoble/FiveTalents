@@ -1,11 +1,13 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
+import { of } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { firstValueFrom } from 'rxjs';
+import { AutocompleteSearchFn, EntityAutocompleteComponent } from '../../shared/components/entity-autocomplete/entity-autocomplete.component';
 import { FamilyRole, FamilySummary } from '../../core/models/family.models';
 import { FamilyService } from '../../core/services/family.service';
 
@@ -17,20 +19,16 @@ export interface JoinFamilyDialogData {
 @Component({
   selector: 'app-join-family-dialog',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatButtonModule, MatDialogModule,
-            MatFormFieldModule, MatSelectModule],
+  imports: [FormsModule, MatButtonModule, MatDialogModule,
+            MatFormFieldModule, MatSelectModule, EntityAutocompleteComponent],
   template: `
     <h2 mat-dialog-title>Add to Family</h2>
     <mat-dialog-content>
       <div class="form-col">
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Family</mat-label>
-          <mat-select [(ngModel)]="selectedFamilyId">
-            @for (f of families(); track f.id) {
-              <mat-option [value]="f.id">{{ f.name }}</mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
+        <app-entity-autocomplete
+          label="Family"
+          [searchFn]="searchFamilies"
+          [(ngModel)]="selectedFamilyId" />
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Role</mat-label>
           <mat-select [(ngModel)]="selectedRoleId">
@@ -57,11 +55,20 @@ export class JoinFamilyDialogComponent implements OnInit {
   private dialogRef = inject(MatDialogRef<JoinFamilyDialogComponent>);
   private familyService = inject(FamilyService);
 
-  families = signal<FamilySummary[]>([]);
+  private allFamilies = signal<FamilySummary[]>([]);
   roles = signal<FamilyRole[]>([]);
   selectedFamilyId: number | null = null;
   selectedRoleId: number | null = null;
   saving = signal(false);
+
+  searchFamilies: AutocompleteSearchFn = (query) => {
+    const q = query.toLowerCase();
+    return of(
+      this.allFamilies()
+        .filter(f => !q || f.name.toLowerCase().includes(q))
+        .map(f => ({ id: f.id, label: f.name }))
+    );
+  };
 
   ngOnInit() { this.load(); }
 
@@ -70,7 +77,7 @@ export class JoinFamilyDialogComponent implements OnInit {
       firstValueFrom(this.familyService.getAll(this.data.organizationId)),
       firstValueFrom(this.familyService.getRoles(this.data.organizationId)),
     ]);
-    this.families.set(families);
+    this.allFamilies.set(families);
     this.roles.set(roles);
     if (roles.length) this.selectedRoleId = roles[0].id;
   }

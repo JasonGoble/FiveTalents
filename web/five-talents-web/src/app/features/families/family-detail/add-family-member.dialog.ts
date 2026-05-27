@@ -1,16 +1,16 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { firstValueFrom } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { AutocompleteSearchFn, EntityAutocompleteComponent } from '../../../shared/components/entity-autocomplete/entity-autocomplete.component';
 import { FamilyRole } from '../../../core/models/family.models';
 import { MemberStatus } from '../../../core/models/member.models';
 import { FamilyService } from '../../../core/services/family.service';
 import { MemberService } from '../../../core/services/member.service';
+import { firstValueFrom } from 'rxjs';
 
 export interface AddFamilyMemberDialogData {
   familyId: number;
@@ -18,25 +18,19 @@ export interface AddFamilyMemberDialogData {
   roles: FamilyRole[];
 }
 
-interface MemberOption { id: number; fullName: string; }
-
 @Component({
   selector: 'app-add-family-member-dialog',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatButtonModule, MatDialogModule,
-            MatFormFieldModule, MatInputModule, MatSelectModule],
+  imports: [FormsModule, MatButtonModule, MatDialogModule,
+            MatFormFieldModule, MatSelectModule, EntityAutocompleteComponent],
   template: `
     <h2 mat-dialog-title>Add Member to Family</h2>
     <mat-dialog-content>
       <div class="form-col">
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Member</mat-label>
-          <mat-select [(ngModel)]="selectedMemberId">
-            @for (m of members(); track m.id) {
-              <mat-option [value]="m.id">{{ m.fullName }}</mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
+        <app-entity-autocomplete
+          label="Member"
+          [searchFn]="searchMembers"
+          [(ngModel)]="selectedMemberId" />
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Role</mat-label>
           <mat-select [(ngModel)]="selectedRoleId">
@@ -64,21 +58,17 @@ export class AddFamilyMemberDialogComponent implements OnInit {
   private familyService = inject(FamilyService);
   private memberService = inject(MemberService);
 
-  members = signal<MemberOption[]>([]);
   selectedMemberId: number | null = null;
   selectedRoleId: number | null = null;
   saving = signal(false);
 
+  searchMembers: AutocompleteSearchFn = (query) =>
+    this.memberService.getAll(this.data.organizationId, 1, 20, query, MemberStatus.Active).pipe(
+      map(r => r.items.map(m => ({ id: m.id, label: m.fullName })))
+    );
+
   ngOnInit() {
     if (this.data.roles.length) this.selectedRoleId = this.data.roles[0].id;
-    this.loadMembers();
-  }
-
-  private async loadMembers() {
-    const result = await firstValueFrom(
-      this.memberService.getAll(this.data.organizationId, 1, 500, undefined, MemberStatus.Active)
-    );
-    this.members.set(result.items.map(m => ({ id: m.id, fullName: m.fullName })));
   }
 
   async save() {
