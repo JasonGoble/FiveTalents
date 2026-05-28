@@ -140,7 +140,7 @@ npm start
 
 ### VS Code (recommended)
 
-Press **F5** (or select **Full Stack** from the Run & Debug panel). VS Code will start Mailpit, build the API, and launch both servers with Chrome and .NET debuggers attached. Mailpit and Angular are stopped automatically when the debug session ends.
+Press **F5** (or select **Full Stack** from the Run & Debug panel). VS Code will build the API and launch both servers with Chrome and .NET debuggers attached. Angular is stopped automatically when the debug session ends.
 
 - **SQLite (Track A default):** No external services needed — just press F5.
 - **PostgreSQL locally:** Start Postgres first (service or `docker compose up db -d`), then press F5.

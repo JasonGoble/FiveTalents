@@ -4,33 +4,34 @@ Project conventions and technical gotchas for AI-assisted development on this re
 
 ## Tech Stack (quick reference)
 
-- **API:** .NET 10, ASP.NET Core, MediatR (CQRS), FluentValidation, EF Core 10 + PostgreSQL
+- **API:** .NET 10, ASP.NET Core, MediatR (CQRS), FluentValidation, EF Core 10 + SQLite (dev) / PostgreSQL (prod)
 - **Auth:** ASP.NET Core Identity + JWT Bearer; enums serialized as **strings** via `JsonStringEnumConverter`
 - **Frontend:** Angular 21, standalone components, Angular Material, signals-first state
 - **Architecture:** Clean Architecture — Domain → Application → Infrastructure → Api
 
 ## Running Locally
 
-Local dev uses native Windows services — PostgreSQL 18 (Windows service, auto-start) and Mailpit (binary on PATH). The VS Code "Full Stack" launch config starts Mailpit and the API together; Angular is started via "Angular: Serve + Chrome" or the "Full Stack" compound.
+Local dev requires **no external services** — SQLite is the default database and dev emails are written as `.eml` files to `logs/emails/`. Press F5 in VS Code ("Full Stack") to build the API and launch Angular with debuggers attached.
 
-```powershell
+```bash
 # Migrations (dotnet-ef global tool)
-$ef = "$env:USERPROFILE\.dotnet\tools\dotnet-ef.exe"
-& $ef migrations add <Name> --project src/FiveTalents.Infrastructure --startup-project src/FiveTalents.Api
-& $ef database update --project src/FiveTalents.Infrastructure --startup-project src/FiveTalents.Api
+# SQLite (default dev):
+dotnet-ef migrations add <Name> --project src/FiveTalents.Migrations.Sqlite --startup-project src/FiveTalents.Api
+dotnet-ef database update --project src/FiveTalents.Migrations.Sqlite --startup-project src/FiveTalents.Api
+
+# PostgreSQL (production / opt-in local):
+dotnet-ef migrations add <Name> --project src/FiveTalents.Infrastructure --startup-project src/FiveTalents.Api
+dotnet-ef database update --project src/FiveTalents.Infrastructure --startup-project src/FiveTalents.Api
 
 # API
 dotnet run --project src/FiveTalents.Api   # http://localhost:5290
 
 # Frontend
 cd web/five-talents-web && npm start       # http://localhost:4200
-
-# Email (dev) — the pre-launch task starts this automatically, or run manually
-mailpit                                    # UI at http://localhost:8025
 ```
 
-> **Note:** `appsettings.Development.json` is gitignored and holds any machine-local overrides (e.g. connection string). The base `appsettings.json` uses `localhost:5432`.
-> Docker (`docker-compose.yml`) is used only for Render deployment, not local dev.
+> **Note:** `appsettings.Development.json` is gitignored. It defaults to SQLite (`DatabaseProvider: Sqlite`, `Data Source=FiveTalents.db`). Override with `DatabaseProvider: Postgres` and a connection string to use PostgreSQL locally.
+> Docker (`docker-compose.yml`) is used only for Render deployment and self-hosting, not local dev.
 
 ## Branching & GitHub Workflow
 
@@ -93,4 +94,4 @@ The following member operations require `[Authorize(Roles = "SystemAdmin")]` at 
 
 ## Architecture Decision Records
 
-ADRs live in `docs/decisions/`. See `docs/decisions/README.md` for the index. Current range: 0001–0010.
+ADRs live in `docs/decisions/`. See `docs/decisions/README.md` for the index. Current range: 0001–0015.
