@@ -31,7 +31,7 @@
     {
       "label": "stop: angular",
       "type": "shell",
-      "command": "Get-NetTCPConnection -LocalPort 4200 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess | ForEach-Object { Stop-Process -Id $_ -Force -ErrorAction SilentlyContinue }",
+      "command": "fuser -k 4200/tcp 2>/dev/null || true",
       "presentation": { "reveal": "silent", "panel": "shared" },
       "problemMatcher": []
     },
