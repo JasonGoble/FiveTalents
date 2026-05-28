@@ -5,4 +5,7 @@
     <Project Path="src/FiveTalents.Domain/FiveTalents.Domain.csproj" />
     <Project Path="src/FiveTalents.Infrastructure/FiveTalents.Infrastructure.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/FiveTalents.Tests.Unit/FiveTalents.Tests.Unit.csproj" />
+  </Folder>
 </Solution>
