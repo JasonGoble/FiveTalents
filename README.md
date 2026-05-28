@@ -15,7 +15,7 @@ A full-stack church management system built with .NET 10 and Angular 21.
 | Layer | Technology |
 |-------|-----------|
 | API | .NET 10, ASP.NET Core, MediatR, FluentValidation |
-| ORM | Entity Framework Core 10, PostgreSQL |
+| ORM | Entity Framework Core 10, SQLite (dev) / PostgreSQL (prod) |
 | Auth | ASP.NET Core Identity, JWT Bearer |
 | Frontend | Angular 21, Angular Material |
 | Architecture | Clean Architecture, CQRS |
@@ -60,33 +60,26 @@ Plus **one** of the two backing-service tracks below.
 
 ## Getting Started
 
-Choose the track that fits your environment. Both share the same API and frontend steps that follow.
+The default setup (Track A) uses SQLite with no external dependencies. Track B shows Docker for self-hosting or local PostgreSQL. Both share the same API and frontend steps that follow.
 
 ---
 
-### Track A — Native services (Windows Server 2025)
+### Track A — SQLite (default, zero dependencies)
 
-Required on Windows Server 2025, where WSL2 Docker networking is unsupported, and linux containers are barely tolerated.
-
-**Install:**
-- [PostgreSQL 16+](https://www.postgresql.org/download/) — install as a Windows service (auto-starts on boot); use port 5432 with username/password `postgres`
-- [Mailpit](https://github.com/axllent/mailpit/releases/latest) — single binary, add to PATH; used for local email capture only (production uses a real SMTP server)
-
-**Create the database** (pgAdmin or psql):
-
-```sql
-CREATE DATABASE "FiveTalents" OWNER postgres;
-```
-
-The base `appsettings.json` connects to `localhost:5432`. Override per-machine via the gitignored `appsettings.Development.json` if your local settings differ:
+The default local dev setup uses **SQLite** — no external database needed. The gitignored `appsettings.Development.json` is pre-configured with:
 
 ```json
 {
+  "DatabaseProvider": "Sqlite",
   "ConnectionStrings": {
-    "DefaultConnection": "Host=localhost;Port=5432;Database=FiveTalents;Username=postgres;Password=postgres"
+    "DefaultConnection": "Data Source=FiveTalents.db"
   }
 }
 ```
+
+The database file is created automatically by EF Core on first run. You still need [Mailpit](https://github.com/axllent/mailpit/releases/latest) on PATH for local email capture (the VS Code launch config starts it automatically).
+
+**To use PostgreSQL locally instead**, set `"DatabaseProvider": "Postgres"` and supply a Postgres connection string in `appsettings.Development.json`, then apply the Postgres migrations (see step 1 below).
 
 ---
 
@@ -106,14 +99,15 @@ This starts PostgreSQL on port **5433** and Mailpit on port **1025** (UI at `htt
 
 ### 1. Apply migrations
 
-```powershell
-# Windows (PowerShell)
-$ef = "$env:USERPROFILE\.dotnet\tools\dotnet-ef.exe"
-& $ef database update --project src/FiveTalents.Infrastructure --startup-project src/FiveTalents.Api
-```
+**SQLite (default):**
 
 ```bash
-# macOS / Linux
+dotnet-ef database update --project src/FiveTalents.Migrations.Sqlite --startup-project src/FiveTalents.Api
+```
+
+**PostgreSQL:**
+
+```bash
 dotnet-ef database update --project src/FiveTalents.Infrastructure --startup-project src/FiveTalents.Api
 ```
 
@@ -148,8 +142,8 @@ npm start
 
 Press **F5** (or select **Full Stack** from the Run & Debug panel). VS Code will start Mailpit, build the API, and launch both servers with Chrome and .NET debuggers attached. Mailpit and Angular are stopped automatically when the debug session ends.
 
-- **Track A:** PostgreSQL is already running as a service — just press F5.
-- **Track B:** Run `docker compose up db mailpit -d --wait` first, then press F5.
+- **SQLite (Track A default):** No external services needed — just press F5.
+- **PostgreSQL locally:** Start Postgres first (service or `docker compose up db -d`), then press F5.
 
 For production, set real SMTP credentials in `appsettings.json`:
 
@@ -194,6 +188,7 @@ The fix is a catch-all rewrite rule that sends every unmatched path to `index.ht
 - **CQRS via MediatR** — every read is a `Query`, every write is a `Command`; no business logic in controllers.
 - **Soft deletes** — `Member`, `Group`, `GroupType`, `Family`, `Sermon`, and `ChurchEvent` use an `IsDeleted` flag with a global EF query filter.
 - **Auditing** — all entities inherit from `AuditableEntity` which stamps `CreatedAt` / `UpdatedAt` and scopes records to an `OrganizationId`.
+- **Database providers** — SQLite in local dev (zero dependencies); PostgreSQL in production. The active provider is set via `DatabaseProvider` in configuration. Migrations live in separate assemblies: `FiveTalents.Migrations.Sqlite` and `FiveTalents.Infrastructure` (Postgres). See [ADR-0015](docs/decisions/0015-database-provider-strategy.md).
 - **String enums** — the API serializes all enums as strings (`JsonStringEnumConverter`).
 - **Angular signals** — all component state uses `signal()` / `computed()`; no `BehaviorSubject` or manual change detection.
 - **Role-gated admin actions** — Destructive member-account operations (unlink) are restricted to the `SystemAdmin` role at the API level (`[Authorize(Roles = "SystemAdmin")]`). The `isSystemAdmin` flag returned by auth endpoints lets the frontend hide admin controls for regular users.

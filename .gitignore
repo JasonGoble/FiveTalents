@@ -13,6 +13,11 @@ logs/
 **/appsettings.Development.json
 **/appsettings.Local.json
 
+# SQLite dev database
+*.db
+*.db-shm
+*.db-wal
+
 # EF migrations snapshots are intentionally tracked; keep this out:
 # (nothing to exclude here by default)
 
