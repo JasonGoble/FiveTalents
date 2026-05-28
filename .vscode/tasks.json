@@ -29,44 +29,21 @@
       "presentation": { "reveal": "always", "panel": "dedicated", "group": "servers" }
     },
     {
-      "label": "start: mailpit",
-      "type": "shell",
-      "command": "mailpit",
-      "isBackground": true,
-      "problemMatcher": {
-        "owner": "mailpit",
-        "pattern": { "regexp": "^$" },
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": "\\[smtpd\\]",
-          "endsPattern": "accessible via"
-        }
-      },
-      "presentation": { "reveal": "silent", "panel": "shared" }
-    },
-    {
-      "label": "stop: mailpit",
-      "type": "shell",
-      "command": "Stop-Process -Name mailpit -ErrorAction SilentlyContinue",
-      "presentation": { "reveal": "silent", "panel": "shared" },
-      "problemMatcher": []
-    },
-    {
       "label": "stop: angular",
       "type": "shell",
-      "command": "Get-NetTCPConnection -LocalPort 4200 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess | ForEach-Object { Stop-Process -Id $_ -Force -ErrorAction SilentlyContinue }",
+      "command": "fuser -k 4200/tcp 2>/dev/null || true",
       "presentation": { "reveal": "silent", "panel": "shared" },
       "problemMatcher": []
     },
     {
       "label": "stop: all",
-      "dependsOn": ["stop: mailpit", "stop: angular"],
+      "dependsOn": ["stop: angular"],
       "dependsOrder": "parallel",
       "problemMatcher": []
     },
     {
       "label": "pre-launch: full stack",
-      "dependsOn": ["build: api", "start: mailpit"],
+      "dependsOn": ["build: api"],
       "dependsOrder": "parallel",
       "group": "build"
     },

@@ -17,7 +17,7 @@ builder.Host.UseSerilog((ctx, lc) => lc
 
 // Application + Infrastructure
 builder.Services.AddApplication();
-builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddInfrastructure(builder.Configuration, builder.Environment);
 
 // JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
