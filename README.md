@@ -56,7 +56,7 @@ FiveTalents/
 - [Angular CLI](https://angular.io/cli) — `npm install -g @angular/cli`
 - [dotnet-ef](https://learn.microsoft.com/en-us/ef/core/cli/dotnet) — `dotnet tool install --global dotnet-ef`
 
-Plus **one** of the two backing-service tracks below.
+Track A (SQLite) needs no additional services. Track B (Docker/Postgres) requires [Docker Desktop](https://docs.docker.com/get-docker/).
 
 ## Getting Started
 
@@ -77,7 +77,7 @@ The default local dev setup uses **SQLite** — no external database needed. The
 }
 ```
 
-The database file is created automatically by EF Core on first run. You still need [Mailpit](https://github.com/axllent/mailpit/releases/latest) on PATH for local email capture (the VS Code launch config starts it automatically).
+The database file is created automatically by EF Core on first run. No external services are required — emails are written as `.eml` files to `logs/emails/` instead of being sent over SMTP.
 
 **To use PostgreSQL locally instead**, set `"DatabaseProvider": "Postgres"` and supply a Postgres connection string in `appsettings.Development.json`, then apply the Postgres migrations (see step 1 below).
 

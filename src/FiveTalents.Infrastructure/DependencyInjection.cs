@@ -9,12 +9,13 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace FiveTalents.Infrastructure;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration, IHostEnvironment environment)
     {
         var provider = configuration["DatabaseProvider"] ?? "Sqlite";
         var connectionString = ParseConnectionString(configuration.GetConnectionString("DefaultConnection") ?? "");
@@ -47,7 +48,10 @@ public static class DependencyInjection
         services.AddScoped<IOrganizationHierarchyService, OrganizationHierarchyService>();
         services.AddScoped<IUserLinkingService, UserLinkingService>();
         services.Configure<SmtpSettings>(configuration.GetSection("SmtpSettings"));
-        services.AddScoped<IEmailService, SmtpEmailService>();
+        if (environment.IsDevelopment())
+            services.AddScoped<IEmailService, DevEmailSender>();
+        else
+            services.AddScoped<IEmailService, SmtpEmailService>();
         services.AddScoped<ISmsService, SmsService>();
         services.AddScoped<IGoogleWorkspaceService, GoogleWorkspaceService>();
 
