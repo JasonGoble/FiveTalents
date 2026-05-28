@@ -22,6 +22,7 @@ Each ADR is numbered sequentially and never edited after acceptance. If a decisi
 | [0012](0012-contact-type-lookup-table.md) | ContactType Lookup Table for Member Contact Info | Accepted |
 | [0013](0013-component-file-separation.md) | Angular Component File Separation | Accepted |
 | [0014](0014-organization-scoped-configuration.md) | Organization-Scoped Configuration and the Org-First Feature Model | Accepted |
+| [0015](0015-database-provider-strategy.md) | Database Provider Strategy — SQLite for Dev, PostgreSQL for Production | Accepted |
 
 ## Template
 
