@@ -59,6 +59,27 @@ Create a GitHub issue for **every** reported defect, even small ones. The value 
 
 ## Before Every Commit
 
+### Step 1 — Format & build
+
+For any .NET changes, run in order:
+
+```bash
+# 1. Verify editorconfig compliance (fix violations before proceeding)
+dotnet format --verify-no-changes
+
+# 2. Compile
+dotnet build
+
+# 3. Tests (if test project is affected or handler/domain code changed)
+dotnet test
+```
+
+For Angular changes: `npm run build` from `web/five-talents-web`.
+
+Fix any format, build, or test failures before moving to step 2.
+
+### Step 2 — Documentation checklist
+
 Before staging, explicitly ask:
 
 1. **README.md** — does this change anything in the features table or architecture notes? If yes, update it in the same commit.
