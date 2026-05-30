@@ -40,6 +40,10 @@ web/**/coverage/
 npm-debug.log
 yarn-error.log
 
+# ===== Playwright =====
+web/**/playwright-report/
+web/**/test-results/
+
 # ===== VS Code =====
 # Keep launch/tasks/extensions configs, ignore personal settings
 .vscode/settings.json

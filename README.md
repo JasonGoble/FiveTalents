@@ -163,7 +163,7 @@ For production, set real SMTP credentials in `appsettings.json`:
 On first run the database is seeded with:
 
 - A root organization (*My Church*)
-- An admin user — `admin@FiveTalents.com` / `Admin@1234!`
+- An admin user — `admin@FiveTalents.local` / `Admin1234!`
 - Seven default group types (Small Group, Ministry Team, Bible Study, Prayer Group, Youth, Children, Leadership Team)
 
 ## Troubleshooting
