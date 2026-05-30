@@ -1,5 +1,7 @@
 ﻿# FiveTalents
 
+[![CI](https://github.com/JasonGoble/FiveTalents/actions/workflows/ci.yml/badge.svg)](https://github.com/JasonGoble/FiveTalents/actions/workflows/ci.yml)
+
 > *Faithful stewardship for growing churches.*
 
 Inspired by the Parable of the Talents (Matthew 25:14–30), FiveTalents is a free, open-source church management platform built for small-to-mid-sized churches — Anglican, Presbyterian, Lutheran, Methodist, and Reformed traditions especially. It gives any congregation modern tools to shepherd their people, coordinate ministries, and steward resources faithfully, without the complexity or cost of enterprise ChMS software.
