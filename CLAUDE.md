@@ -113,6 +113,30 @@ The following member operations require `[Authorize(Roles = "SystemAdmin")]` at 
 - Move organization (`/members/{id}/organization`)
 - Status field in member edit form
 
+## E2E Tests (Playwright)
+
+Run E2E tests from `web/five-talents-web/`:
+
+```bash
+# The full stack must be running before executing E2E tests.
+# In separate terminals:
+dotnet run --project src/FiveTalents.Api      # API on http://localhost:5290
+cd web/five-talents-web && npm start          # Angular on http://localhost:4200
+
+# Then run E2E tests (from web/five-talents-web/):
+npm run e2e
+
+# Headed mode for debugging:
+npx playwright test --headed
+
+# Single spec file:
+npx playwright test e2e/auth.spec.ts
+```
+
+> **Ubuntu 26.04:** Playwright's bundled Chromium is not supported on this OS. The config auto-detects `/usr/bin/chromium-browser`. Install it with `sudo apt install chromium-browser` if missing. On CI (Ubuntu 22.04/24.04) Playwright installs its own binary — no extra config needed.
+
+E2E reports land in `playwright-report/` (gitignored). Test artifacts go to `test-results/` (gitignored). Tests use `reuseExistingServer: true` — if the stack is already running, it will be reused rather than restarted. Each test creates data with a unique timestamp and deletes it on completion.
+
 ## Code Coverage
 
 Run coverage locally with the XPlat collector and generate an HTML report:
