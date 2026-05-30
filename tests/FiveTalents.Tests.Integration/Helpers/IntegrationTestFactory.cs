@@ -31,6 +31,7 @@ public class IntegrationTestFactory : WebApplicationFactory<Program>
     {
         builder.ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(new Dictionary<string, string?>
         {
+            ["DatabaseProvider"] = "Sqlite",
             ["JwtSettings:Secret"] = JwtTokenHelper.TestSecret,
             ["JwtSettings:Issuer"] = JwtTokenHelper.TestIssuer,
             ["JwtSettings:Audience"] = JwtTokenHelper.TestAudience,
