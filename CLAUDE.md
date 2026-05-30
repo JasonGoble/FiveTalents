@@ -113,6 +113,25 @@ The following member operations require `[Authorize(Roles = "SystemAdmin")]` at 
 - Move organization (`/members/{id}/organization`)
 - Status field in member edit form
 
+## Code Coverage
+
+Run coverage locally with the XPlat collector and generate an HTML report:
+
+```bash
+# Collect coverage (outputs XML under coverage/raw/)
+dotnet test --settings coverlet.runsettings --results-directory coverage/raw
+
+# Generate HTML report (requires dotnet tool restore first)
+dotnet tool restore
+dotnet reportgenerator -reports:"coverage/raw/**/*.xml" -targetdir:"coverage/html" -reporttypes:Html
+
+# Open the report
+xdg-open coverage/html/index.html   # Linux
+open coverage/html/index.html       # macOS
+```
+
+The `coverage/` directory is gitignored. The `reportgenerator` tool is declared in `.config/dotnet-tools.json`; run `dotnet tool restore` once after cloning. Threshold enforcement (70% line) is implemented in CI (#80) by parsing the output XML — it is not enforced locally by this command.
+
 ## Architecture Decision Records
 
 ADRs live in `docs/decisions/`. See `docs/decisions/README.md` for the index. Current range: 0001–0015.
