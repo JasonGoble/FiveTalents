@@ -25,6 +25,7 @@ logs/
 TestResults/
 *.trx
 *.coveragexml
+coverage/
 
 # Publish output
 publish/
