@@ -3,6 +3,7 @@ using FiveTalents.Domain.Members;
 using FiveTalents.Domain.Organizations;
 using FiveTalents.Infrastructure.Persistence;
 using FiveTalents.Tests.Unit.Helpers;
+
 using FluentAssertions;
 
 namespace FiveTalents.Tests.Unit.Organizations.Queries;
@@ -64,7 +65,7 @@ public class GetAllOrganizationsQueryHandlerTests : IDisposable
     [Fact]
     public async Task Handle_IncludesMemberCount()
     {
-        var org = new Organization { Name = "With Members", Level = 1, IsActive = true };
+        Organization org = new() { Name = "With Members", Level = 1, IsActive = true };
         _db.Organizations.Add(org);
         await _db.SaveChangesAsync();
         _db.Members.AddRange(
@@ -86,7 +87,7 @@ public class GetAllOrganizationsQueryHandlerTests : IDisposable
             new Organization { Name = "Beta Parish", Level = 2, IsActive = true });
         await _db.SaveChangesAsync();
 
-        var result = (await _handler.Handle(new GetAllOrganizationsQuery(), CancellationToken.None)).ToList();
+        IList<OrganizationDto> result = (await _handler.Handle(new GetAllOrganizationsQuery(), CancellationToken.None)).ToList();
 
         result[0].Name.Should().Be("Alpha Diocese");
         result[1].Name.Should().Be("Beta Parish");

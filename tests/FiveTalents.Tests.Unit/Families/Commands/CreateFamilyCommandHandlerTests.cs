@@ -1,6 +1,7 @@
 using FiveTalents.Application.Families.Commands;
 using FiveTalents.Infrastructure.Persistence;
 using FiveTalents.Tests.Unit.Helpers;
+
 using FluentAssertions;
 
 namespace FiveTalents.Tests.Unit.Families.Commands;
@@ -21,7 +22,7 @@ public class CreateFamilyCommandHandlerTests : IDisposable
     [Fact]
     public async Task Handle_WithValidCommand_ReturnsFamilyId()
     {
-        var command = new CreateFamilyCommand(OrganizationId: 1, Name: "The Smiths");
+        CreateFamilyCommand command = new CreateFamilyCommand(OrganizationId: 1, Name: "The Smiths");
 
         int id = await _handler.Handle(command, CancellationToken.None);
 
@@ -31,7 +32,7 @@ public class CreateFamilyCommandHandlerTests : IDisposable
     [Fact]
     public async Task Handle_StoresFamilyWithCorrectProperties()
     {
-        var command = new CreateFamilyCommand(OrganizationId: 5, Name: "The Joneses");
+        CreateFamilyCommand command = new CreateFamilyCommand(OrganizationId: 5, Name: "The Joneses");
 
         int id = await _handler.Handle(command, CancellationToken.None);
 

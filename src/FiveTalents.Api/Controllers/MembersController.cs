@@ -1,6 +1,7 @@
 using FiveTalents.Application.Members.Commands;
 using FiveTalents.Application.Members.Queries;
 using FiveTalents.Domain.Members;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -27,14 +28,18 @@ public class MembersController : BaseController
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateMemberCommand command, CancellationToken ct = default)
     {
-        var id = await Mediator.Send(command, ct);
+        int id = await Mediator.Send(command, ct);
         return CreatedAtAction(nameof(GetById), new { id }, new { id });
     }
 
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, [FromBody] UpdateMemberCommand command, CancellationToken ct = default)
     {
-        if (id != command.Id) return BadRequest();
+        if (id != command.Id)
+        {
+            return BadRequest();
+        }
+
         await Mediator.Send(command, ct);
         return NoContent();
     }

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 namespace FiveTalents.Api.Controllers;
+
 public class GivingController : BaseController
 {
     [HttpGet("donations")] public IActionResult GetDonations(int organizationId) => Ok(new { message = "TODO", organizationId });

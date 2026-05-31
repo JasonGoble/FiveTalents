@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 namespace FiveTalents.Api.Controllers;
+
 public class EventsController : BaseController
 {
     [HttpGet] public IActionResult GetAll(int organizationId) => Ok(new { message = "TODO", organizationId });

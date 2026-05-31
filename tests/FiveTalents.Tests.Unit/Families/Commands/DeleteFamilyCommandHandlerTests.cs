@@ -3,7 +3,9 @@ using FiveTalents.Application.Families.Commands;
 using FiveTalents.Domain.Families;
 using FiveTalents.Infrastructure.Persistence;
 using FiveTalents.Tests.Unit.Helpers;
+
 using FluentAssertions;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace FiveTalents.Tests.Unit.Families.Commands;
@@ -24,7 +26,7 @@ public class DeleteFamilyCommandHandlerTests : IDisposable
     [Fact]
     public async Task Handle_WithExistingFamily_SetsIsDeleted()
     {
-        var family = new Family { OrganizationId = 1, Name = "Smith Family" };
+        Family family = new Family { OrganizationId = 1, Name = "Smith Family" };
         _db.Families.Add(family);
         await _db.SaveChangesAsync();
 
@@ -45,7 +47,7 @@ public class DeleteFamilyCommandHandlerTests : IDisposable
     [Fact]
     public async Task Handle_WithAlreadyDeletedFamily_ThrowsNotFoundException()
     {
-        var family = new Family { OrganizationId = 1, Name = "Gone Family", IsDeleted = true };
+        Family family = new Family { OrganizationId = 1, Name = "Gone Family", IsDeleted = true };
         _db.Families.Add(family);
         await _db.SaveChangesAsync();
 

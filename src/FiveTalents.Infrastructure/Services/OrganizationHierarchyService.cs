@@ -1,4 +1,5 @@
 using FiveTalents.Application.Common.Interfaces;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace FiveTalents.Infrastructure.Services;
@@ -11,16 +12,18 @@ public class OrganizationHierarchyService(IApplicationDbContext db) : IOrganizat
             .Select(o => new { o.Id, o.ParentOrganizationId })
             .ToListAsync(ct);
 
-        var result = new List<int>();
-        var queue = new Queue<int>();
+        List<int> result = new List<int>();
+        Queue<int> queue = new Queue<int>();
         queue.Enqueue(rootOrgId);
 
         while (queue.Count > 0)
         {
-            var current = queue.Dequeue();
+            int current = queue.Dequeue();
             result.Add(current);
             foreach (var child in allOrgs.Where(o => o.ParentOrganizationId == current))
+            {
                 queue.Enqueue(child.Id);
+            }
         }
 
         return result;

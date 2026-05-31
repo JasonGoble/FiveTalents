@@ -1,5 +1,3 @@
-using FiveTalents.Domain.Members;
-
 namespace FiveTalents.Application.Members.DTOs;
 
 public record ContactTypeDto(int Id, string Name);

@@ -3,7 +3,9 @@ using FiveTalents.Application.Members.Queries;
 using FiveTalents.Domain.Members;
 using FiveTalents.Infrastructure.Persistence;
 using FiveTalents.Tests.Unit.Helpers;
+
 using FluentAssertions;
+
 using NSubstitute;
 
 namespace FiveTalents.Tests.Unit.Members.Queries;

@@ -4,7 +4,9 @@ using FiveTalents.Application.Members.DTOs;
 using FiveTalents.Domain.Members;
 using FiveTalents.Infrastructure.Persistence;
 using FiveTalents.Tests.Unit.Helpers;
+
 using FluentAssertions;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace FiveTalents.Tests.Unit.Members.Commands;
@@ -25,11 +27,11 @@ public class UpdateMemberCommandHandlerTests : IDisposable
     [Fact]
     public async Task Handle_WithExistingMember_UpdatesScalarProperties()
     {
-        var member = new Member { OrganizationId = 1, FirstName = "Alice", LastName = "Old", Status = MemberStatus.Active };
+        Member member = new Member { OrganizationId = 1, FirstName = "Alice", LastName = "Old", Status = MemberStatus.Active };
         _db.Members.Add(member);
         await _db.SaveChangesAsync();
 
-        var command = new UpdateMemberCommand(
+        UpdateMemberCommand command = new UpdateMemberCommand(
             Id: member.Id,
             FirstName: "Alice",
             LastName: "New",
@@ -56,14 +58,14 @@ public class UpdateMemberCommandHandlerTests : IDisposable
     [Fact]
     public async Task Handle_WithNewEmails_ReplacesOldEmails()
     {
-        var member = new Member { OrganizationId = 1, FirstName = "Bob", LastName = "Jones" };
+        Member member = new Member { OrganizationId = 1, FirstName = "Bob", LastName = "Jones" };
         _db.Members.Add(member);
         await _db.SaveChangesAsync();
         _db.MemberEmails.Add(new MemberEmail { MemberId = member.Id, Email = "old@example.com", IsPrimary = true, ContactTypeId = 1 });
         await _db.SaveChangesAsync();
 
-        var newEmails = new List<MemberEmailInput> { new(null, 1, true, "new@example.com") };
-        var command = new UpdateMemberCommand(member.Id, "Bob", "Jones", null, null, null, null,
+        List<MemberEmailInput> newEmails = new List<MemberEmailInput> { new(null, 1, true, "new@example.com") };
+        UpdateMemberCommand command = new UpdateMemberCommand(member.Id, "Bob", "Jones", null, null, null, null,
             MemberStatus.Active, null, null, newEmails, null);
 
         await _handler.Handle(command, CancellationToken.None);
@@ -76,13 +78,13 @@ public class UpdateMemberCommandHandlerTests : IDisposable
     [Fact]
     public async Task Handle_WithNullEmails_ClearsAllEmails()
     {
-        var member = new Member { OrganizationId = 1, FirstName = "Carol", LastName = "White" };
+        Member member = new Member { OrganizationId = 1, FirstName = "Carol", LastName = "White" };
         _db.Members.Add(member);
         await _db.SaveChangesAsync();
         _db.MemberEmails.Add(new MemberEmail { MemberId = member.Id, Email = "carol@example.com", IsPrimary = true, ContactTypeId = 1 });
         await _db.SaveChangesAsync();
 
-        var command = new UpdateMemberCommand(member.Id, "Carol", "White", null, null, null, null,
+        UpdateMemberCommand command = new UpdateMemberCommand(member.Id, "Carol", "White", null, null, null, null,
             MemberStatus.Active, null, null, null, null);
 
         await _handler.Handle(command, CancellationToken.None);
@@ -94,7 +96,7 @@ public class UpdateMemberCommandHandlerTests : IDisposable
     [Fact]
     public async Task Handle_WithNonExistentId_ThrowsNotFoundException()
     {
-        var command = new UpdateMemberCommand(999, "Ghost", "Member", null, null, null, null,
+        UpdateMemberCommand command = new UpdateMemberCommand(999, "Ghost", "Member", null, null, null, null,
             MemberStatus.Active, null, null, null, null);
 
         var act = async () => await _handler.Handle(command, CancellationToken.None);

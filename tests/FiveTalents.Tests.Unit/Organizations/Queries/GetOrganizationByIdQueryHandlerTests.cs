@@ -3,6 +3,7 @@ using FiveTalents.Domain.Members;
 using FiveTalents.Domain.Organizations;
 using FiveTalents.Infrastructure.Persistence;
 using FiveTalents.Tests.Unit.Helpers;
+
 using FluentAssertions;
 
 namespace FiveTalents.Tests.Unit.Organizations.Queries;
@@ -23,7 +24,7 @@ public class GetOrganizationByIdQueryHandlerTests : IDisposable
     [Fact]
     public async Task Handle_WithExistingId_ReturnsDto()
     {
-        var org = new Organization { Name = "St. Andrew's", Level = 2, IsActive = true, Email = "info@standrew.test" };
+        Organization org = new Organization { Name = "St. Andrew's", Level = 2, IsActive = true, Email = "info@standrew.test" };
         _db.Organizations.Add(org);
         await _db.SaveChangesAsync();
 
@@ -46,7 +47,7 @@ public class GetOrganizationByIdQueryHandlerTests : IDisposable
     [Fact]
     public async Task Handle_WithDeletedOrg_ReturnsNull()
     {
-        var org = new Organization { Name = "Gone Org", Level = 1, IsDeleted = true };
+        Organization org = new Organization { Name = "Gone Org", Level = 1, IsDeleted = true };
         _db.Organizations.Add(org);
         await _db.SaveChangesAsync();
 
@@ -58,7 +59,7 @@ public class GetOrganizationByIdQueryHandlerTests : IDisposable
     [Fact]
     public async Task Handle_IncludesMemberCount()
     {
-        var org = new Organization { Name = "Counted Org", Level = 1, IsActive = true };
+        Organization org = new Organization { Name = "Counted Org", Level = 1, IsActive = true };
         _db.Organizations.Add(org);
         await _db.SaveChangesAsync();
         _db.Members.Add(new Member { OrganizationId = org.Id, FirstName = "Jane", LastName = "Doe" });
@@ -72,10 +73,10 @@ public class GetOrganizationByIdQueryHandlerTests : IDisposable
     [Fact]
     public async Task Handle_WithParentOrg_ReturnsParentName()
     {
-        var parent = new Organization { Name = "Diocese", Level = 1, IsActive = true };
+        Organization parent = new Organization { Name = "Diocese", Level = 1, IsActive = true };
         _db.Organizations.Add(parent);
         await _db.SaveChangesAsync();
-        var child = new Organization { Name = "Parish", Level = 2, IsActive = true, ParentOrganizationId = parent.Id };
+        Organization child = new Organization { Name = "Parish", Level = 2, IsActive = true, ParentOrganizationId = parent.Id };
         _db.Organizations.Add(child);
         await _db.SaveChangesAsync();
 

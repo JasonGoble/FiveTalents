@@ -1,5 +1,7 @@
 using FiveTalents.Application.Common.Interfaces;
+
 using MediatR;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace FiveTalents.Application.Organizations.Commands;

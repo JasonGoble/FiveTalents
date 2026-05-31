@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 namespace FiveTalents.Api.Controllers;
+
 public class AttendanceController : BaseController
 {
     [HttpGet("sessions")] public IActionResult GetSessions(int organizationId) => Ok(new { message = "TODO", organizationId });

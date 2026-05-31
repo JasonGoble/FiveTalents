@@ -3,7 +3,9 @@ using FiveTalents.Application.Members.Commands;
 using FiveTalents.Domain.Members;
 using FiveTalents.Infrastructure.Persistence;
 using FiveTalents.Tests.Unit.Helpers;
+
 using FluentAssertions;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace FiveTalents.Tests.Unit.Members.Commands;
@@ -24,7 +26,7 @@ public class DeleteMemberCommandHandlerTests : IDisposable
     [Fact]
     public async Task Handle_WithExistingMember_SoftDeletesMember()
     {
-        var member = new Member { OrganizationId = 1, FirstName = "Alice", LastName = "Smith" };
+        Member member = new Member { OrganizationId = 1, FirstName = "Alice", LastName = "Smith" };
         _db.Members.Add(member);
         await _db.SaveChangesAsync();
 
@@ -46,7 +48,7 @@ public class DeleteMemberCommandHandlerTests : IDisposable
     [Fact]
     public async Task Handle_WithAlreadyDeletedMember_ThrowsNotFoundException()
     {
-        var member = new Member { OrganizationId = 1, FirstName = "Bob", LastName = "Jones", IsDeleted = true };
+        Member member = new Member { OrganizationId = 1, FirstName = "Bob", LastName = "Jones", IsDeleted = true };
         _db.Members.Add(member);
         await _db.SaveChangesAsync();
 
@@ -58,13 +60,13 @@ public class DeleteMemberCommandHandlerTests : IDisposable
     [Fact]
     public async Task Handle_WithExistingMember_DoesNotHardDelete()
     {
-        var member = new Member { OrganizationId = 1, FirstName = "Carol", LastName = "White" };
+        Member member = new Member { OrganizationId = 1, FirstName = "Carol", LastName = "White" };
         _db.Members.Add(member);
         await _db.SaveChangesAsync();
 
         await _handler.Handle(new DeleteMemberCommand(member.Id), CancellationToken.None);
 
-        var stillExists = await _db.Members.IgnoreQueryFilters().AnyAsync(m => m.Id == member.Id);
+        bool stillExists = await _db.Members.IgnoreQueryFilters().AnyAsync(m => m.Id == member.Id);
         stillExists.Should().BeTrue();
     }
 }

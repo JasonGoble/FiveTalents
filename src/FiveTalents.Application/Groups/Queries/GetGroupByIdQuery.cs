@@ -1,7 +1,9 @@
 using FiveTalents.Application.Common.Exceptions;
 using FiveTalents.Application.Common.Interfaces;
 using FiveTalents.Application.Groups.DTOs;
+
 using MediatR;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace FiveTalents.Application.Groups.Queries;

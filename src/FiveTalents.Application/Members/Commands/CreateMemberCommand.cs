@@ -1,6 +1,7 @@
 using FiveTalents.Application.Common.Interfaces;
 using FiveTalents.Application.Members.DTOs;
 using FiveTalents.Domain.Members;
+
 using MediatR;
 
 namespace FiveTalents.Application.Members.Commands;
@@ -22,16 +23,16 @@ public class CreateMemberCommandHandler(IApplicationDbContext db) : IRequestHand
 {
     public async Task<int> Handle(CreateMemberCommand request, CancellationToken cancellationToken)
     {
-        var member = new Member
+        Member member = new Member
         {
             OrganizationId = request.OrganizationId,
-            FirstName      = request.FirstName,
-            LastName       = request.LastName,
-            DateOfBirth    = request.DateOfBirth,
-            Gender         = request.Gender,
-            MaritalStatus  = request.MaritalStatus,
-            JoinDate       = request.JoinDate ?? DateTime.UtcNow,
-            Status         = MemberStatus.Active
+            FirstName = request.FirstName,
+            LastName = request.LastName,
+            DateOfBirth = request.DateOfBirth,
+            Gender = request.Gender,
+            MaritalStatus = request.MaritalStatus,
+            JoinDate = request.JoinDate ?? DateTime.UtcNow,
+            Status = MemberStatus.Active
         };
 
         db.Members.Add(member);
@@ -46,36 +47,42 @@ public class CreateMemberCommandHandler(IApplicationDbContext db) : IRequestHand
     internal static void ApplyContacts(int memberId, CreateMemberCommand req, IApplicationDbContext db)
     {
         foreach (var a in req.Addresses ?? [])
+        {
             db.MemberAddresses.Add(new MemberAddress
             {
-                MemberId      = memberId,
+                MemberId = memberId,
                 ContactTypeId = a.ContactTypeId,
-                IsPrimary     = a.IsPrimary,
-                AddressLine1  = a.AddressLine1,
-                AddressLine2  = a.AddressLine2,
-                City          = a.City,
-                State         = a.State,
-                PostalCode    = a.PostalCode,
-                Country       = a.Country
+                IsPrimary = a.IsPrimary,
+                AddressLine1 = a.AddressLine1,
+                AddressLine2 = a.AddressLine2,
+                City = a.City,
+                State = a.State,
+                PostalCode = a.PostalCode,
+                Country = a.Country
             });
+        }
 
         foreach (var e in req.Emails ?? [])
+        {
             db.MemberEmails.Add(new MemberEmail
             {
-                MemberId      = memberId,
+                MemberId = memberId,
                 ContactTypeId = e.ContactTypeId,
-                IsPrimary     = e.IsPrimary,
-                Email         = e.Email
+                IsPrimary = e.IsPrimary,
+                Email = e.Email
             });
+        }
 
         foreach (var p in req.Phones ?? [])
+        {
             db.MemberPhones.Add(new MemberPhone
             {
-                MemberId      = memberId,
+                MemberId = memberId,
                 ContactTypeId = p.ContactTypeId,
-                IsPrimary     = p.IsPrimary,
-                PhoneNumber   = p.PhoneNumber,
-                IsMobile      = p.IsMobile
+                IsPrimary = p.IsPrimary,
+                PhoneNumber = p.PhoneNumber,
+                IsMobile = p.IsMobile
             });
+        }
     }
 }

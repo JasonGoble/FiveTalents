@@ -3,6 +3,7 @@ using FiveTalents.Application.Groups.Queries;
 using FiveTalents.Domain.Groups;
 using FiveTalents.Infrastructure.Persistence;
 using FiveTalents.Tests.Unit.Helpers;
+
 using FluentAssertions;
 
 namespace FiveTalents.Tests.Unit.Groups.Queries;
@@ -22,12 +23,16 @@ public class GetGroupByIdQueryHandlerTests : IDisposable
 
     private async Task<(Group group, GroupType groupType)> SeedGroupAsync(string name = "Test Group")
     {
-        var gt = new GroupType { OrganizationId = 1, Name = "Small Group", Color = "#336699", IconName = "people" };
+        GroupType gt = new GroupType { OrganizationId = 1, Name = "Small Group", Color = "#336699", IconName = "people" };
         _db.GroupTypes.Add(gt);
-        var group = new Group
+        Group group = new Group
         {
-            OrganizationId = 1, Name = name, GroupTypeId = gt.Id,
-            Status = GroupStatus.Active, IsOpenToNewMembers = true, MaxCapacity = 10
+            OrganizationId = 1,
+            Name = name,
+            GroupTypeId = gt.Id,
+            Status = GroupStatus.Active,
+            IsOpenToNewMembers = true,
+            MaxCapacity = 10
         };
         _db.Groups.Add(group);
         await _db.SaveChangesAsync();
@@ -60,9 +65,9 @@ public class GetGroupByIdQueryHandlerTests : IDisposable
     [Fact]
     public async Task Handle_WithDeletedGroup_ThrowsNotFoundException()
     {
-        var gt = new GroupType { OrganizationId = 1, Name = "Type" };
+        GroupType gt = new GroupType { OrganizationId = 1, Name = "Type" };
         _db.GroupTypes.Add(gt);
-        var group = new Group { OrganizationId = 1, Name = "Deleted", GroupTypeId = gt.Id, IsDeleted = true };
+        Group group = new Group { OrganizationId = 1, Name = "Deleted", GroupTypeId = gt.Id, IsDeleted = true };
         _db.Groups.Add(group);
         await _db.SaveChangesAsync();
 

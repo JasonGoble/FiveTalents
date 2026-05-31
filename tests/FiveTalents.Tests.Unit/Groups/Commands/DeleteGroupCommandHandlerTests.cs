@@ -3,7 +3,9 @@ using FiveTalents.Application.Groups.Commands;
 using FiveTalents.Domain.Groups;
 using FiveTalents.Infrastructure.Persistence;
 using FiveTalents.Tests.Unit.Helpers;
+
 using FluentAssertions;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace FiveTalents.Tests.Unit.Groups.Commands;
@@ -23,9 +25,9 @@ public class DeleteGroupCommandHandlerTests : IDisposable
 
     private async Task<Group> SeedGroupAsync()
     {
-        var gt = new GroupType { OrganizationId = 1, Name = "Type" };
+        GroupType gt = new GroupType { OrganizationId = 1, Name = "Type" };
         _db.GroupTypes.Add(gt);
-        var group = new Group { OrganizationId = 1, Name = "Active Group", GroupTypeId = gt.Id };
+        Group group = new Group { OrganizationId = 1, Name = "Active Group", GroupTypeId = gt.Id };
         _db.Groups.Add(group);
         await _db.SaveChangesAsync();
         return group;
@@ -53,9 +55,9 @@ public class DeleteGroupCommandHandlerTests : IDisposable
     [Fact]
     public async Task Handle_WithAlreadyDeletedGroup_ThrowsNotFoundException()
     {
-        var gt = new GroupType { OrganizationId = 1, Name = "Type" };
+        GroupType gt = new GroupType { OrganizationId = 1, Name = "Type" };
         _db.GroupTypes.Add(gt);
-        var group = new Group { OrganizationId = 1, Name = "Gone", GroupTypeId = gt.Id, IsDeleted = true };
+        Group group = new Group { OrganizationId = 1, Name = "Gone", GroupTypeId = gt.Id, IsDeleted = true };
         _db.Groups.Add(group);
         await _db.SaveChangesAsync();
 

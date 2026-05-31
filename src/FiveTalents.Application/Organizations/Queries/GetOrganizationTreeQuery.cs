@@ -1,7 +1,9 @@
 using FiveTalents.Application.Common.Interfaces;
 using FiveTalents.Application.Organizations.DTOs;
 using FiveTalents.Domain.Organizations;
+
 using MediatR;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace FiveTalents.Application.Organizations.Queries;

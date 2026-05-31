@@ -1,5 +1,6 @@
-using FiveTalents.Application.Common.Exceptions;
 using System.Text.Json;
+
+using FiveTalents.Application.Common.Exceptions;
 
 namespace FiveTalents.Api.Middleware;
 

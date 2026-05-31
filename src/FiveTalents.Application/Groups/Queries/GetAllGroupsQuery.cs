@@ -1,7 +1,9 @@
 using FiveTalents.Application.Common.Interfaces;
 using FiveTalents.Application.Groups.DTOs;
 using FiveTalents.Domain.Groups;
+
 using MediatR;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace FiveTalents.Application.Groups.Queries;
@@ -17,11 +19,15 @@ public class GetAllGroupsQueryHandler(IApplicationDbContext db) : IRequestHandle
             .Where(g => g.OrganizationId == request.OrganizationId && !g.IsDeleted);
 
         if (!string.IsNullOrWhiteSpace(request.Search))
+        {
             query = query.Where(g => g.Name.Contains(request.Search) ||
                 (g.Description != null && g.Description.Contains(request.Search)));
+        }
 
         if (request.Status.HasValue)
+        {
             query = query.Where(g => g.Status == request.Status);
+        }
 
         return await query
             .OrderBy(g => g.Name)

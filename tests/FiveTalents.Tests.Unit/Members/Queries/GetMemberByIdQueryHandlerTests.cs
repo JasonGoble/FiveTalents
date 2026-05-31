@@ -4,6 +4,7 @@ using FiveTalents.Domain.Members;
 using FiveTalents.Domain.Organizations;
 using FiveTalents.Infrastructure.Persistence;
 using FiveTalents.Tests.Unit.Helpers;
+
 using FluentAssertions;
 
 namespace FiveTalents.Tests.Unit.Members.Queries;
@@ -24,10 +25,13 @@ public class GetMemberByIdQueryHandlerTests : IDisposable
     [Fact]
     public async Task Handle_WithExistingMember_ReturnsDto()
     {
-        var member = new Member
+        Member member = new Member
         {
-            OrganizationId = 1, FirstName = "Alice", LastName = "Smith",
-            Gender = Gender.Female, Status = MemberStatus.Active
+            OrganizationId = 1,
+            FirstName = "Alice",
+            LastName = "Smith",
+            Gender = Gender.Female,
+            Status = MemberStatus.Active
         };
         _db.Members.Add(member);
         await _db.SaveChangesAsync();
@@ -52,7 +56,7 @@ public class GetMemberByIdQueryHandlerTests : IDisposable
     [Fact]
     public async Task Handle_WithDeletedMember_ThrowsNotFoundException()
     {
-        var member = new Member { OrganizationId = 1, FirstName = "Bob", LastName = "Gone", IsDeleted = true };
+        Member member = new Member { OrganizationId = 1, FirstName = "Bob", LastName = "Gone", IsDeleted = true };
         _db.Members.Add(member);
         await _db.SaveChangesAsync();
 
@@ -64,10 +68,10 @@ public class GetMemberByIdQueryHandlerTests : IDisposable
     [Fact]
     public async Task Handle_IncludesOrgName()
     {
-        var org = new Organization { Name = "Grace Parish", Level = 1, IsActive = true };
+        Organization org = new Organization { Name = "Grace Parish", Level = 1, IsActive = true };
         _db.Organizations.Add(org);
         await _db.SaveChangesAsync();
-        var member = new Member { OrganizationId = org.Id, FirstName = "Carol", LastName = "White" };
+        Member member = new Member { OrganizationId = org.Id, FirstName = "Carol", LastName = "White" };
         _db.Members.Add(member);
         await _db.SaveChangesAsync();
 
@@ -79,15 +83,18 @@ public class GetMemberByIdQueryHandlerTests : IDisposable
     [Fact]
     public async Task Handle_WithEmails_ReturnsEmailsInDto()
     {
-        var member = new Member { OrganizationId = 1, FirstName = "Dave", LastName = "Lee" };
+        Member member = new Member { OrganizationId = 1, FirstName = "Dave", LastName = "Lee" };
         _db.Members.Add(member);
         await _db.SaveChangesAsync();
-        var contactType = new ContactType { Category = ContactTypeCategory.Email, Name = "Personal", SortOrder = 1 };
+        ContactType contactType = new ContactType { Category = ContactTypeCategory.Email, Name = "Personal", SortOrder = 1 };
         _db.ContactTypes.Add(contactType);
         await _db.SaveChangesAsync();
         _db.MemberEmails.Add(new MemberEmail
         {
-            MemberId = member.Id, Email = "dave@example.com", IsPrimary = true, ContactTypeId = contactType.Id
+            MemberId = member.Id,
+            Email = "dave@example.com",
+            IsPrimary = true,
+            ContactTypeId = contactType.Id
         });
         await _db.SaveChangesAsync();
 

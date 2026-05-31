@@ -11,6 +11,7 @@ using FiveTalents.Domain.Organizations;
 using FiveTalents.Domain.Sermons;
 using FiveTalents.Domain.Volunteers;
 using FiveTalents.Infrastructure.Identity;
+
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -122,19 +123,19 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             .OnDelete(DeleteBehavior.Cascade);
 
         // ContactType — no soft-delete filter; seed default types (static CreatedAt required for deterministic model)
-        var seedDate = new DateTime(2026, 5, 14, 0, 0, 0, DateTimeKind.Utc);
+        DateTime seedDate = new DateTime(2026, 5, 14, 0, 0, 0, DateTimeKind.Utc);
         builder.Entity<ContactType>().HasData(
-            new ContactType { Id = 1,  Category = ContactTypeCategory.Address, Name = "Home",     SortOrder = 10, IsActive = true, CreatedAt = seedDate },
-            new ContactType { Id = 2,  Category = ContactTypeCategory.Address, Name = "Work",     SortOrder = 20, IsActive = true, CreatedAt = seedDate },
-            new ContactType { Id = 3,  Category = ContactTypeCategory.Address, Name = "Mailing",  SortOrder = 30, IsActive = true, CreatedAt = seedDate },
-            new ContactType { Id = 4,  Category = ContactTypeCategory.Address, Name = "Other",    SortOrder = 40, IsActive = true, CreatedAt = seedDate },
-            new ContactType { Id = 5,  Category = ContactTypeCategory.Email,   Name = "Personal", SortOrder = 10, IsActive = true, CreatedAt = seedDate },
-            new ContactType { Id = 6,  Category = ContactTypeCategory.Email,   Name = "Work",     SortOrder = 20, IsActive = true, CreatedAt = seedDate },
-            new ContactType { Id = 7,  Category = ContactTypeCategory.Email,   Name = "Other",    SortOrder = 30, IsActive = true, CreatedAt = seedDate },
-            new ContactType { Id = 8,  Category = ContactTypeCategory.Phone,   Name = "Home",     SortOrder = 10, IsActive = true, CreatedAt = seedDate },
-            new ContactType { Id = 9,  Category = ContactTypeCategory.Phone,   Name = "Work",     SortOrder = 20, IsActive = true, CreatedAt = seedDate },
-            new ContactType { Id = 10, Category = ContactTypeCategory.Phone,   Name = "Mobile",   SortOrder = 30, IsActive = true, CreatedAt = seedDate },
-            new ContactType { Id = 11, Category = ContactTypeCategory.Phone,   Name = "Other",    SortOrder = 40, IsActive = true, CreatedAt = seedDate }
+            new ContactType { Id = 1, Category = ContactTypeCategory.Address, Name = "Home", SortOrder = 10, IsActive = true, CreatedAt = seedDate },
+            new ContactType { Id = 2, Category = ContactTypeCategory.Address, Name = "Work", SortOrder = 20, IsActive = true, CreatedAt = seedDate },
+            new ContactType { Id = 3, Category = ContactTypeCategory.Address, Name = "Mailing", SortOrder = 30, IsActive = true, CreatedAt = seedDate },
+            new ContactType { Id = 4, Category = ContactTypeCategory.Address, Name = "Other", SortOrder = 40, IsActive = true, CreatedAt = seedDate },
+            new ContactType { Id = 5, Category = ContactTypeCategory.Email, Name = "Personal", SortOrder = 10, IsActive = true, CreatedAt = seedDate },
+            new ContactType { Id = 6, Category = ContactTypeCategory.Email, Name = "Work", SortOrder = 20, IsActive = true, CreatedAt = seedDate },
+            new ContactType { Id = 7, Category = ContactTypeCategory.Email, Name = "Other", SortOrder = 30, IsActive = true, CreatedAt = seedDate },
+            new ContactType { Id = 8, Category = ContactTypeCategory.Phone, Name = "Home", SortOrder = 10, IsActive = true, CreatedAt = seedDate },
+            new ContactType { Id = 9, Category = ContactTypeCategory.Phone, Name = "Work", SortOrder = 20, IsActive = true, CreatedAt = seedDate },
+            new ContactType { Id = 10, Category = ContactTypeCategory.Phone, Name = "Mobile", SortOrder = 30, IsActive = true, CreatedAt = seedDate },
+            new ContactType { Id = 11, Category = ContactTypeCategory.Phone, Name = "Other", SortOrder = 40, IsActive = true, CreatedAt = seedDate }
         );
 
         // Family relationships
@@ -181,7 +182,9 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         foreach (var entry in ChangeTracker.Entries<Domain.Common.BaseEntity>())
         {
             if (entry.State == EntityState.Modified)
+            {
                 entry.Entity.UpdatedAt = DateTime.UtcNow;
+            }
         }
         return await base.SaveChangesAsync(cancellationToken);
     }

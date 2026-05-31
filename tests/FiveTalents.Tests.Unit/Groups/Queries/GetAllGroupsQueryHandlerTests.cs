@@ -2,6 +2,7 @@ using FiveTalents.Application.Groups.Queries;
 using FiveTalents.Domain.Groups;
 using FiveTalents.Infrastructure.Persistence;
 using FiveTalents.Tests.Unit.Helpers;
+
 using FluentAssertions;
 
 namespace FiveTalents.Tests.Unit.Groups.Queries;
@@ -21,7 +22,7 @@ public class GetAllGroupsQueryHandlerTests : IDisposable
 
     private async Task<GroupType> SeedGroupTypeAsync(int orgId = 1)
     {
-        var gt = new GroupType { OrganizationId = orgId, Name = "Small Group", Color = "#336699" };
+        GroupType gt = new GroupType { OrganizationId = orgId, Name = "Small Group", Color = "#336699" };
         _db.GroupTypes.Add(gt);
         await _db.SaveChangesAsync();
         return gt;

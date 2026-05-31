@@ -1,6 +1,8 @@
 using FiveTalents.Application.Common.Interfaces;
 using FiveTalents.Application.Organizations.DTOs;
+
 using MediatR;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace FiveTalents.Application.Organizations.Queries;
@@ -17,9 +19,12 @@ public class GetOrganizationByIdQueryHandler(IApplicationDbContext db)
             .Include(o => o.ParentOrganization)
             .FirstOrDefaultAsync(o => o.Id == request.Id && !o.IsDeleted, cancellationToken);
 
-        if (o is null) return null;
+        if (o is null)
+        {
+            return null;
+        }
 
-        var memberCount = await db.Members
+        int memberCount = await db.Members
             .CountAsync(m => m.OrganizationId == o.Id && !m.IsDeleted, cancellationToken);
 
         return new OrganizationDto(

@@ -2,7 +2,9 @@ using FiveTalents.Application.Common.Interfaces;
 using FiveTalents.Application.Common.Models;
 using FiveTalents.Application.Members.DTOs;
 using FiveTalents.Domain.Members;
+
 using MediatR;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace FiveTalents.Application.Members.Queries;
@@ -25,9 +27,13 @@ public class GetMembersQueryHandler(
     {
         IReadOnlyList<int> orgIds;
         if (request.IncludeChildOrgs)
+        {
             orgIds = await hierarchyService.GetDescendantOrgIdsAsync(request.OrganizationId, cancellationToken);
+        }
         else
+        {
             orgIds = [request.OrganizationId];
+        }
 
         var explicitMemberUserIds = request.IncludeChildOrgs
             ? await db.UserOrganizationRoles
@@ -40,15 +46,19 @@ public class GetMembersQueryHandler(
             .Where(m => orgIds.Contains(m.OrganizationId) && !m.IsDeleted);
 
         if (!string.IsNullOrWhiteSpace(request.Search))
+        {
             query = query.Where(m =>
                 m.FirstName.Contains(request.Search) ||
                 m.LastName.Contains(request.Search) ||
                 m.Emails.Any(e => e.Email.Contains(request.Search)));
+        }
 
         if (request.Status.HasValue)
+        {
             query = query.Where(m => m.Status == request.Status);
+        }
 
-        var total = await query.CountAsync(cancellationToken);
+        int total = await query.CountAsync(cancellationToken);
 
         var raw = await query
             .OrderBy(m => m.LastName).ThenBy(m => m.FirstName)
@@ -56,8 +66,13 @@ public class GetMembersQueryHandler(
             .Take(request.PageSize)
             .Select(m => new
             {
-                m.Id, m.FullName, m.Status, m.OrganizationId, m.UserId,
-                m.ShareEmailWithNetwork, m.SharePhoneWithNetwork,
+                m.Id,
+                m.FullName,
+                m.Status,
+                m.OrganizationId,
+                m.UserId,
+                m.ShareEmailWithNetwork,
+                m.SharePhoneWithNetwork,
                 PrimaryEmail = m.Emails.Where(e => e.IsPrimary).Select(e => e.Email).FirstOrDefault()
                             ?? m.Emails.OrderBy(e => e.Id).Select(e => e.Email).FirstOrDefault(),
                 PrimaryPhone = m.Phones.Where(p => p.IsPrimary).Select(p => p.PhoneNumber).FirstOrDefault()
@@ -73,18 +88,18 @@ public class GetMembersQueryHandler(
                 .ToDictionaryAsync(o => o.Id, o => o.Name, cancellationToken);
         }
 
-        var items = raw.Select(m =>
+        List<MemberSummaryDto> items = raw.Select(m =>
         {
-            var isDirectOrg  = m.OrganizationId == request.OrganizationId;
-            var hasExplicitRole = m.UserId != null && explicitMemberUserIds.Contains(m.UserId);
-            var showContact  = isDirectOrg || hasExplicitRole;
+            bool isDirectOrg = m.OrganizationId == request.OrganizationId;
+            bool hasExplicitRole = m.UserId != null && explicitMemberUserIds.Contains(m.UserId);
+            bool showContact = isDirectOrg || hasExplicitRole;
 
             return new MemberSummaryDto(
-                Id:           m.Id,
-                FullName:     m.FullName,
+                Id: m.Id,
+                FullName: m.FullName,
                 PrimaryEmail: showContact || m.ShareEmailWithNetwork ? m.PrimaryEmail : null,
                 PrimaryPhone: showContact || m.SharePhoneWithNetwork ? m.PrimaryPhone : null,
-                Status:       m.Status,
+                Status: m.Status,
                 OrganizationId: m.OrganizationId,
                 OrgName: request.IncludeChildOrgs && !isDirectOrg
                     ? orgNames.GetValueOrDefault(m.OrganizationId)

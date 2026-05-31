@@ -1,4 +1,5 @@
 using FiveTalents.Application.Common.Interfaces;
+
 using Microsoft.Extensions.Logging;
 
 namespace FiveTalents.Infrastructure.Services.GoogleWorkspace;

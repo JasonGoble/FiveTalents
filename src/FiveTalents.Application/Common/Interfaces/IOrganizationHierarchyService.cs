@@ -2,5 +2,5 @@ namespace FiveTalents.Application.Common.Interfaces;
 
 public interface IOrganizationHierarchyService
 {
-    Task<IReadOnlyList<int>> GetDescendantOrgIdsAsync(int rootOrgId, CancellationToken ct = default);
+    public Task<IReadOnlyList<int>> GetDescendantOrgIdsAsync(int rootOrgId, CancellationToken ct = default);
 }

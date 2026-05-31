@@ -1,4 +1,5 @@
 using FiveTalents.Application.Common.Interfaces;
+
 using MediatR;
 
 namespace FiveTalents.Application.Users.Queries;

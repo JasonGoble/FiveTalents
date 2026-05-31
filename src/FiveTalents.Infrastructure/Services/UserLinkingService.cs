@@ -1,5 +1,6 @@
 using FiveTalents.Application.Common.Interfaces;
 using FiveTalents.Infrastructure.Identity;
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -38,7 +39,7 @@ public class UserLinkingService(UserManager<ApplicationUser> userManager) : IUse
 
     public async Task<string> CreateUserForMemberAsync(string email, string firstName, string lastName, int memberId, int primaryOrgId)
     {
-        var user = new ApplicationUser
+        ApplicationUser user = new ApplicationUser
         {
             UserName = email,
             Email = email,
@@ -51,7 +52,9 @@ public class UserLinkingService(UserManager<ApplicationUser> userManager) : IUse
 
         var result = await userManager.CreateAsync(user);
         if (!result.Succeeded)
+        {
             throw new InvalidOperationException($"Could not create user: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+        }
 
         return user.Id;
     }

@@ -1,7 +1,9 @@
 using FiveTalents.Application.Organizations.Commands;
 using FiveTalents.Infrastructure.Persistence;
 using FiveTalents.Tests.Unit.Helpers;
+
 using FluentAssertions;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace FiveTalents.Tests.Unit.Organizations.Commands;
@@ -22,7 +24,7 @@ public class CreateOrganizationCommandHandlerTests : IDisposable
     [Fact]
     public async Task Handle_WithMinimalCommand_ReturnsPositiveId()
     {
-        var command = new CreateOrganizationCommand { Name = "Diocese of Test", Level = 1 };
+        CreateOrganizationCommand command = new CreateOrganizationCommand { Name = "Diocese of Test", Level = 1 };
 
         int id = await _handler.Handle(command, CancellationToken.None);
 
@@ -32,7 +34,7 @@ public class CreateOrganizationCommandHandlerTests : IDisposable
     [Fact]
     public async Task Handle_WithValidCommand_StoresOrganizationWithCorrectProperties()
     {
-        var command = new CreateOrganizationCommand
+        CreateOrganizationCommand command = new CreateOrganizationCommand
         {
             Name = "St. Paul's Parish",
             Level = 2,
@@ -58,7 +60,7 @@ public class CreateOrganizationCommandHandlerTests : IDisposable
     [Fact]
     public async Task Handle_CreatesDefaultOrganizationSettings()
     {
-        var command = new CreateOrganizationCommand { Name = "Test Org", Level = 1 };
+        CreateOrganizationCommand command = new CreateOrganizationCommand { Name = "Test Org", Level = 1 };
 
         int id = await _handler.Handle(command, CancellationToken.None);
 
@@ -71,8 +73,8 @@ public class CreateOrganizationCommandHandlerTests : IDisposable
     [Fact]
     public async Task Handle_MultipleOrgs_GetUniqueIds()
     {
-        var cmd1 = new CreateOrganizationCommand { Name = "Org One", Level = 1 };
-        var cmd2 = new CreateOrganizationCommand { Name = "Org Two", Level = 1 };
+        CreateOrganizationCommand cmd1 = new CreateOrganizationCommand { Name = "Org One", Level = 1 };
+        CreateOrganizationCommand cmd2 = new CreateOrganizationCommand { Name = "Org Two", Level = 1 };
 
         int id1 = await _handler.Handle(cmd1, CancellationToken.None);
         int id2 = await _handler.Handle(cmd2, CancellationToken.None);

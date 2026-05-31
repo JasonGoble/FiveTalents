@@ -1,7 +1,9 @@
 using FiveTalents.Application.Common.Interfaces;
 using FiveTalents.Application.Members.DTOs;
 using FiveTalents.Domain.Members;
+
 using MediatR;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace FiveTalents.Application.Members.Queries;
@@ -21,9 +23,9 @@ public class GetContactTypesQueryHandler(IApplicationDbContext db)
         return new ContactTypesDto(
             AddressTypes: types.Where(t => t.Category == ContactTypeCategory.Address)
                                .Select(t => new ContactTypeDto(t.Id, t.Name)).ToList(),
-            EmailTypes:   types.Where(t => t.Category == ContactTypeCategory.Email)
+            EmailTypes: types.Where(t => t.Category == ContactTypeCategory.Email)
                                .Select(t => new ContactTypeDto(t.Id, t.Name)).ToList(),
-            PhoneTypes:   types.Where(t => t.Category == ContactTypeCategory.Phone)
+            PhoneTypes: types.Where(t => t.Category == ContactTypeCategory.Phone)
                                .Select(t => new ContactTypeDto(t.Id, t.Name)).ToList()
         );
     }

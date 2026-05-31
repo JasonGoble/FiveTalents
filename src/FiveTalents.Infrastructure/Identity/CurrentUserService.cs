@@ -1,6 +1,8 @@
-using FiveTalents.Application.Common.Interfaces;
-using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
+
+using FiveTalents.Application.Common.Interfaces;
+
+using Microsoft.AspNetCore.Http;
 
 namespace FiveTalents.Infrastructure.Identity;
 
@@ -16,7 +18,7 @@ public class CurrentUserService(IHttpContextAccessor httpContextAccessor) : ICur
     {
         get
         {
-            var claim = User?.FindFirstValue("organization_id");
+            string? claim = User?.FindFirstValue("organization_id");
             return claim != null ? int.Parse(claim) : null;
         }
     }
