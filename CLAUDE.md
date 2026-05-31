@@ -1,6 +1,6 @@
-﻿# FiveTalents — Claude Working Guide
+# FiveTalents — Claude Working Guide
 
-Project conventions and technical gotchas for AI-assisted development on this repo.
+Project-specific conventions and technical gotchas. Shared workflow and process policies live in `../CLAUDE.md`.
 
 ## Tech Stack (quick reference)
 
@@ -26,68 +26,18 @@ dotnet-ef database update --project src/FiveTalents.Infrastructure --startup-pro
 # API
 dotnet run --project src/FiveTalents.Api   # http://localhost:5290
 
-# Frontend
+# Frontend (Angular build path for the pre-commit check)
 cd web/five-talents-web && npm start       # http://localhost:4200
 ```
 
 > **Note:** `appsettings.Development.json` is gitignored. It defaults to SQLite (`DatabaseProvider: Sqlite`, `Data Source=FiveTalents.db`). Override with `DatabaseProvider: Postgres` and a connection string to use PostgreSQL locally.
 > Docker (`docker-compose.yml`) is used only for Render deployment and self-hosting, not local dev.
 
-## Branching & GitHub Workflow
+## Pre-Commit: FiveTalents-Site Sync
 
-- **GitHub Flow:** `feature/<issue#>-<slug>` or `fix/<issue#>-<slug>` → PR → merge to `main`
-- Direct pushes to `main` are blocked; JasonGoble is on the bypass list
-- Assign `JasonGoble` to an issue when work **begins** on it (not before)
-- Include `Fixes #N` or `Closes #N` in commit messages so GitHub auto-closes issues on merge
+In addition to the standard documentation checklist in `../CLAUDE.md`, also ask:
 
-## GitHub Issue Conventions
-
-**Title format:** `feat:`, `bug:`, or `chore:` prefix — lowercase, e.g. `feat: attendance tracking`
-
-**Labels:**
-| Issue type | Labels |
-|------------|--------|
-| `feat:` | `feature`, `backend`, `frontend` |
-| `bug:` | `bug` |
-| `chore:` | `chore` |
-
-Every issue — regardless of type — must also have at least one `area:` label (e.g. `area:members`, `area:families`, `area:groups`). Apply this when creating or triaging issues.
-
-**Bug issue body structure:** Symptom → Root Cause → Fix → Fixed In (commit SHA)
-
-Create a GitHub issue for **every** reported defect, even small ones. The value is the cumulative searchable record linking symptoms to commits.
-
-## Before Every Commit
-
-### Step 1 — Format & build
-
-For any .NET changes, run in order:
-
-```bash
-# 1. Auto-fix editorconfig violations, then verify clean
-dotnet format
-dotnet format --verify-no-changes
-
-# 2. Compile
-dotnet build
-
-# 3. Tests (if test project is affected or handler/domain code changed)
-dotnet test
-```
-
-For Angular changes: `npm run build` from `web/five-talents-web`.
-
-Fix any format, build, or test failures before moving to step 2.
-
-### Step 2 — Documentation checklist
-
-Before staging, explicitly ask:
-
-1. **README.md** — does this change anything in the features table or architecture notes? If yes, update it in the same commit.
-2. **docs/decisions/** — does this introduce or close a meaningful architectural or policy decision? If yes, add a new numbered ADR and update `docs/decisions/README.md`. ADRs are never edited after acceptance — superseded decisions get a new ADR.
-3. **Bruno collection** — does this add or change any API endpoints? If yes, create or update the corresponding `.bru` request files in `bruno/` in the same commit.
-
-A commit with no doc or test updates is fine, but the check must be deliberate, not skipped.
+**FiveTalents-site** (`~/code/FiveTalents-site` or `d:\code\FiveTalents-site`) — does this change affect the public-facing landing page? Consider: new features going live, modules changing status, architecture or stack changes, brand updates. Update `src/pages/index.astro` and commit to that repo separately if so.
 
 ## Key Technical Gotchas
 
