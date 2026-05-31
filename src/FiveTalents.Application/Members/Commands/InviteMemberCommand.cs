@@ -1,6 +1,8 @@
 using FiveTalents.Application.Common.Exceptions;
 using FiveTalents.Application.Common.Interfaces;
+
 using MediatR;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -22,14 +24,18 @@ public class InviteMemberCommandHandler(
             .FirstOrDefaultAsync(m => m.Id == request.MemberId, cancellationToken)
             ?? throw new NotFoundException("Member", request.MemberId);
 
-        var primaryEmail = member.Emails.FirstOrDefault(e => e.IsPrimary)?.Email
+        string? primaryEmail = member.Emails.FirstOrDefault(e => e.IsPrimary)?.Email
                         ?? member.Emails.OrderBy(e => e.Id).FirstOrDefault()?.Email;
 
         if (string.IsNullOrWhiteSpace(primaryEmail))
+        {
             throw new InvalidOperationException("Member does not have an email address. Add an email before sending an invite.");
+        }
 
         if (member.UserId != null)
+        {
             throw new InvalidOperationException("Member already has a linked user account.");
+        }
 
         var existingUser = await userService.FindByEmailAsync(primaryEmail);
         string userId;
@@ -37,11 +43,15 @@ public class InviteMemberCommandHandler(
         if (existingUser != null)
         {
             if (existingUser.MemberId != null && existingUser.MemberId != member.Id)
+            {
                 throw new InvalidOperationException($"A user with email '{primaryEmail}' is already linked to a different member.");
+            }
 
             userId = existingUser.Id;
             if (existingUser.MemberId == null)
+            {
                 await userService.SetMemberLinkAsync(userId, member.Id);
+            }
         }
         else
         {
@@ -52,9 +62,9 @@ public class InviteMemberCommandHandler(
         member.UserId = userId;
         await db.SaveChangesAsync(cancellationToken);
 
-        var token = await userService.GenerateInviteTokenAsync(userId);
-        var encodedToken = Uri.EscapeDataString(token);
-        var inviteUrl = $"{request.AcceptBaseUrl.TrimEnd('/')}/auth/setup-account" +
+        string token = await userService.GenerateInviteTokenAsync(userId);
+        string encodedToken = Uri.EscapeDataString(token);
+        string inviteUrl = $"{request.AcceptBaseUrl.TrimEnd('/')}/auth/setup-account" +
                         $"?email={Uri.EscapeDataString(primaryEmail)}&token={encodedToken}";
 
         try

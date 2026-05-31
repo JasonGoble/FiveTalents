@@ -4,7 +4,9 @@ using FiveTalents.Domain.Families;
 using FiveTalents.Domain.Members;
 using FiveTalents.Infrastructure.Persistence;
 using FiveTalents.Tests.Unit.Helpers;
+
 using FluentAssertions;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace FiveTalents.Tests.Unit.Families.Commands;
@@ -24,9 +26,9 @@ public class AddFamilyMemberCommandHandlerTests : IDisposable
 
     private async Task<(Family family, Member member, FamilyRole role)> SeedAsync()
     {
-        var family = new Family { OrganizationId = 1, Name = "Jones Family" };
-        var member = new Member { OrganizationId = 1, FirstName = "Bob", LastName = "Jones" };
-        var role = new FamilyRole { OrganizationId = 1, Name = "Head of Household", IsAdult = true, SortOrder = 1 };
+        Family family = new Family { OrganizationId = 1, Name = "Jones Family" };
+        Member member = new Member { OrganizationId = 1, FirstName = "Bob", LastName = "Jones" };
+        FamilyRole role = new FamilyRole { OrganizationId = 1, Name = "Head of Household", IsAdult = true, SortOrder = 1 };
         _db.Families.Add(family);
         _db.Members.Add(member);
         _db.FamilyRoles.Add(role);

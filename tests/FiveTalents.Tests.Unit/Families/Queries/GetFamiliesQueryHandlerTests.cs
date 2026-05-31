@@ -3,6 +3,7 @@ using FiveTalents.Domain.Families;
 using FiveTalents.Domain.Members;
 using FiveTalents.Infrastructure.Persistence;
 using FiveTalents.Tests.Unit.Helpers;
+
 using FluentAssertions;
 
 namespace FiveTalents.Tests.Unit.Families.Queries;
@@ -51,11 +52,11 @@ public class GetFamiliesQueryHandlerTests : IDisposable
     [Fact]
     public async Task Handle_IncludesMemberCount()
     {
-        var family = new Family { OrganizationId = 1, Name = "Adams Family" };
+        Family family = new Family { OrganizationId = 1, Name = "Adams Family" };
         _db.Families.Add(family);
-        var member = new Member { OrganizationId = 1, FirstName = "Alice", LastName = "Adams" };
+        Member member = new Member { OrganizationId = 1, FirstName = "Alice", LastName = "Adams" };
         _db.Members.Add(member);
-        var role = new FamilyRole { OrganizationId = 1, Name = "Head", IsAdult = true, SortOrder = 1 };
+        FamilyRole role = new() { OrganizationId = 1, Name = "Head", IsAdult = true, SortOrder = 1 };
         _db.FamilyRoles.Add(role);
         await _db.SaveChangesAsync();
         _db.FamilyMembers.Add(new FamilyMember { FamilyId = family.Id, MemberId = member.Id, FamilyRoleId = role.Id });

@@ -2,7 +2,9 @@ using FiveTalents.Application.Common.Exceptions;
 using FiveTalents.Application.Common.Interfaces;
 using FiveTalents.Application.Members.DTOs;
 using FiveTalents.Domain.Members;
+
 using MediatR;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace FiveTalents.Application.Members.Queries;
@@ -20,7 +22,7 @@ public class GetMemberByIdQueryHandler(IApplicationDbContext db) : IRequestHandl
             .FirstOrDefaultAsync(m => m.Id == request.Id && !m.IsDeleted, cancellationToken)
             ?? throw new NotFoundException(nameof(Member), request.Id);
 
-        var orgName = await db.Organizations
+        string? orgName = await db.Organizations
             .Where(o => o.Id == member.OrganizationId)
             .Select(o => o.Name)
             .FirstOrDefaultAsync(cancellationToken);

@@ -3,6 +3,7 @@ using FiveTalents.Application.Families.Commands;
 using FiveTalents.Domain.Families;
 using FiveTalents.Infrastructure.Persistence;
 using FiveTalents.Tests.Unit.Helpers;
+
 using FluentAssertions;
 
 namespace FiveTalents.Tests.Unit.Families.Commands;
@@ -23,7 +24,7 @@ public class UpdateFamilyCommandHandlerTests : IDisposable
     [Fact]
     public async Task Handle_WithExistingFamily_UpdatesName()
     {
-        var family = new Family { OrganizationId = 1, Name = "Old Name" };
+        Family family = new Family { OrganizationId = 1, Name = "Old Name" };
         _db.Families.Add(family);
         await _db.SaveChangesAsync();
 
@@ -44,7 +45,7 @@ public class UpdateFamilyCommandHandlerTests : IDisposable
     [Fact]
     public async Task Handle_WithDeletedFamily_ThrowsNotFoundException()
     {
-        var family = new Family { OrganizationId = 1, Name = "Deleted", IsDeleted = true };
+        Family family = new Family { OrganizationId = 1, Name = "Deleted", IsDeleted = true };
         _db.Families.Add(family);
         await _db.SaveChangesAsync();
 

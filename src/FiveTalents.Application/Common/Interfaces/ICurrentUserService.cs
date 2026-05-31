@@ -2,10 +2,10 @@ namespace FiveTalents.Application.Common.Interfaces;
 
 public interface ICurrentUserService
 {
-    string? UserId { get; }
-    string? UserName { get; }
-    int? OrganizationId { get; }
-    bool IsAuthenticated { get; }
-    bool IsInRole(string role);
-    IEnumerable<int> GetAccessibleOrganizationIds();
+    public string? UserId { get; }
+    public string? UserName { get; }
+    public int? OrganizationId { get; }
+    public bool IsAuthenticated { get; }
+    public bool IsInRole(string role);
+    public IEnumerable<int> GetAccessibleOrganizationIds();
 }

@@ -1,7 +1,9 @@
 using FiveTalents.Application.Common.Exceptions;
 using FiveTalents.Application.Common.Interfaces;
 using FiveTalents.Domain.Members;
+
 using MediatR;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace FiveTalents.Application.Members.Commands;
@@ -16,9 +18,11 @@ public class MoveMemberToOrganizationCommandHandler(IApplicationDbContext db)
         var member = await db.Members.FirstOrDefaultAsync(m => m.Id == request.MemberId && !m.IsDeleted, cancellationToken)
             ?? throw new NotFoundException(nameof(Member), request.MemberId);
 
-        var orgExists = await db.Organizations.AnyAsync(o => o.Id == request.OrganizationId && o.IsActive && !o.IsDeleted, cancellationToken);
+        bool orgExists = await db.Organizations.AnyAsync(o => o.Id == request.OrganizationId && o.IsActive && !o.IsDeleted, cancellationToken);
         if (!orgExists)
+        {
             throw new NotFoundException("Organization", request.OrganizationId);
+        }
 
         member.OrganizationId = request.OrganizationId;
         member.UpdatedAt = DateTime.UtcNow;

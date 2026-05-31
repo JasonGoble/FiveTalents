@@ -3,7 +3,9 @@ using FiveTalents.Application.Members.DTOs;
 using FiveTalents.Domain.Members;
 using FiveTalents.Infrastructure.Persistence;
 using FiveTalents.Tests.Unit.Helpers;
+
 using FluentAssertions;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace FiveTalents.Tests.Unit.Members.Commands;
@@ -24,7 +26,7 @@ public class CreateMemberCommandHandlerTests : IDisposable
     [Fact]
     public async Task Handle_WithMinimalCommand_ReturnsMemberId()
     {
-        var command = new CreateMemberCommand(
+        CreateMemberCommand command = new CreateMemberCommand(
             OrganizationId: 1,
             FirstName: "Alice",
             LastName: "Smith",
@@ -44,8 +46,8 @@ public class CreateMemberCommandHandlerTests : IDisposable
     [Fact]
     public async Task Handle_WithValidCommand_StoresMemberWithCorrectProperties()
     {
-        var joinDate = new DateTime(2024, 1, 15, 0, 0, 0, DateTimeKind.Utc);
-        var command = new CreateMemberCommand(
+        DateTime joinDate = new DateTime(2024, 1, 15, 0, 0, 0, DateTimeKind.Utc);
+        CreateMemberCommand command = new CreateMemberCommand(
             OrganizationId: 1,
             FirstName: "Bob",
             LastName: "Jones",
@@ -74,7 +76,7 @@ public class CreateMemberCommandHandlerTests : IDisposable
     public async Task Handle_WithNullJoinDate_DefaultsJoinDateToNow()
     {
         var before = DateTime.UtcNow.AddSeconds(-1);
-        var command = new CreateMemberCommand(1, "Carol", "White", null, null, null, null, null, null, null);
+        CreateMemberCommand command = new CreateMemberCommand(1, "Carol", "White", null, null, null, null, null, null, null);
 
         int id = await _handler.Handle(command, CancellationToken.None);
 
@@ -85,12 +87,12 @@ public class CreateMemberCommandHandlerTests : IDisposable
     [Fact]
     public async Task Handle_WithEmails_StoresEmailsForMember()
     {
-        var emails = new List<MemberEmailInput>
+        List<MemberEmailInput> emails = new List<MemberEmailInput>
         {
             new(Id: null, ContactTypeId: 1, IsPrimary: true, Email: "alice@example.com"),
             new(Id: null, ContactTypeId: 2, IsPrimary: false, Email: "alice.work@example.com")
         };
-        var command = new CreateMemberCommand(1, "Alice", "Smith", null, null, null, null, null, emails, null);
+        CreateMemberCommand command = new CreateMemberCommand(1, "Alice", "Smith", null, null, null, null, null, emails, null);
 
         int id = await _handler.Handle(command, CancellationToken.None);
 
@@ -103,14 +105,14 @@ public class CreateMemberCommandHandlerTests : IDisposable
     [Fact]
     public async Task Handle_WithAllContactTypes_StoresAllContacts()
     {
-        var addresses = new List<MemberAddressInput>
+        List<MemberAddressInput> addresses = new List<MemberAddressInput>
         {
             new(Id: null, ContactTypeId: 1, IsPrimary: true, AddressLine1: "123 Main St",
                 AddressLine2: null, City: "Springfield", State: "IL", PostalCode: "62701", Country: "US")
         };
-        var emails = new List<MemberEmailInput> { new(null, 1, true, "bob@example.com") };
-        var phones = new List<MemberPhoneInput> { new(null, 1, true, "555-1234", false) };
-        var command = new CreateMemberCommand(1, "Bob", "Jones", null, null, null, null, addresses, emails, phones);
+        List<MemberEmailInput> emails = new List<MemberEmailInput> { new(null, 1, true, "bob@example.com") };
+        List<MemberPhoneInput> phones = new List<MemberPhoneInput> { new(null, 1, true, "555-1234", false) };
+        CreateMemberCommand command = new CreateMemberCommand(1, "Bob", "Jones", null, null, null, null, addresses, emails, phones);
 
         int id = await _handler.Handle(command, CancellationToken.None);
 

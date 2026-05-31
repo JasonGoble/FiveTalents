@@ -1,5 +1,6 @@
 using FiveTalents.Application.Families.Commands;
 using FiveTalents.Application.Families.Queries;
+
 using Microsoft.AspNetCore.Mvc;
 
 namespace FiveTalents.Api.Controllers;
@@ -21,14 +22,18 @@ public class FamiliesController : BaseController
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateFamilyCommand command, CancellationToken ct)
     {
-        var id = await Mediator.Send(command, ct);
+        int id = await Mediator.Send(command, ct);
         return CreatedAtAction(nameof(GetById), new { id }, new { id });
     }
 
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, [FromBody] UpdateFamilyCommand command, CancellationToken ct)
     {
-        if (id != command.Id) return BadRequest();
+        if (id != command.Id)
+        {
+            return BadRequest();
+        }
+
         await Mediator.Send(command, ct);
         return NoContent();
     }

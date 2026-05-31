@@ -1,5 +1,6 @@
 using FiveTalents.Application.Common.Interfaces;
 using FiveTalents.Domain.Families;
+
 using MediatR;
 
 namespace FiveTalents.Application.Families.Commands;
@@ -11,7 +12,7 @@ public class CreateFamilyCommandHandler(IApplicationDbContext db)
 {
     public async Task<int> Handle(CreateFamilyCommand request, CancellationToken cancellationToken)
     {
-        var family = new Family
+        Family family = new Family
         {
             OrganizationId = request.OrganizationId,
             Name = request.Name,

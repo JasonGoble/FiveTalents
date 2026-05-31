@@ -1,6 +1,8 @@
 using FiveTalents.Application.Common.Exceptions;
 using FiveTalents.Application.Common.Interfaces;
+
 using MediatR;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace FiveTalents.Application.Members.Commands;
@@ -18,7 +20,9 @@ public class UnlinkMemberFromUserCommandHandler(
             ?? throw new NotFoundException("Member", request.MemberId);
 
         if (member.UserId != null)
+        {
             await userService.SetMemberLinkAsync(member.UserId, null);
+        }
 
         member.UserId = null;
         await db.SaveChangesAsync(cancellationToken);

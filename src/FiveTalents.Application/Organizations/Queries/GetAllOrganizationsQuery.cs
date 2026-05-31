@@ -1,6 +1,8 @@
 using FiveTalents.Application.Common.Interfaces;
 using FiveTalents.Application.Organizations.DTOs;
+
 using MediatR;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace FiveTalents.Application.Organizations.Queries;
@@ -18,7 +20,9 @@ public class GetAllOrganizationsQueryHandler(IApplicationDbContext db)
             .Where(o => !o.IsDeleted);
 
         if (!request.IncludeInactive)
+        {
             query = query.Where(o => o.IsActive);
+        }
 
         var orgs = await query
             .OrderBy(o => o.Level)

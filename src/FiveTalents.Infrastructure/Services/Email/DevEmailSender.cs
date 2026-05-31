@@ -1,4 +1,5 @@
 using FiveTalents.Application.Common.Interfaces;
+
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -13,16 +14,16 @@ public class DevEmailSender(IOptions<SmtpSettings> options, ILogger<DevEmailSend
 
     public async Task SendAsync(IEnumerable<string> recipients, string subject, string body, bool isHtml = true, CancellationToken cancellationToken = default)
     {
-        var recipientList = recipients.ToList();
-        var dir = Path.Combine(Directory.GetCurrentDirectory(), "logs", "emails");
+        List<string> recipientList = recipients.ToList();
+        string dir = Path.Combine(Directory.GetCurrentDirectory(), "logs", "emails");
         Directory.CreateDirectory(dir);
 
-        var filename = $"{DateTime.UtcNow:yyyyMMdd-HHmmss-fff}_{Sanitize(subject)}.eml";
-        var path = Path.Combine(dir, filename);
+        string filename = $"{DateTime.UtcNow:yyyyMMdd-HHmmss-fff}_{Sanitize(subject)}.eml";
+        string path = Path.Combine(dir, filename);
 
-        var contentType = isHtml ? "text/html" : "text/plain";
-        var date = DateTime.UtcNow.ToString("ddd, dd MMM yyyy HH:mm:ss +0000");
-        var eml =
+        string contentType = isHtml ? "text/html" : "text/plain";
+        string date = DateTime.UtcNow.ToString("ddd, dd MMM yyyy HH:mm:ss +0000");
+        string eml =
             $"From: {_settings.FromName} <{_settings.FromAddress}>\r\n" +
             $"To: {string.Join(", ", recipientList)}\r\n" +
             $"Subject: {subject}\r\n" +
@@ -38,8 +39,8 @@ public class DevEmailSender(IOptions<SmtpSettings> options, ILogger<DevEmailSend
 
     private static string Sanitize(string value)
     {
-        var invalid = Path.GetInvalidFileNameChars();
-        var safe = string.Concat(value.Select(c => invalid.Contains(c) ? '_' : c));
+        char[] invalid = Path.GetInvalidFileNameChars();
+        string safe = string.Concat(value.Select(c => invalid.Contains(c) ? '_' : c));
         return safe.Length > 60 ? safe[..60] : safe;
     }
 }

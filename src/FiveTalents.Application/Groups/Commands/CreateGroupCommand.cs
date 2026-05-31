@@ -1,5 +1,6 @@
 using FiveTalents.Application.Common.Interfaces;
 using FiveTalents.Domain.Groups;
+
 using MediatR;
 
 namespace FiveTalents.Application.Groups.Commands;
@@ -25,7 +26,7 @@ public class CreateGroupCommandHandler(IApplicationDbContext db) : IRequestHandl
 {
     public async Task<int> Handle(CreateGroupCommand request, CancellationToken cancellationToken)
     {
-        var group = new Group
+        Group group = new Group
         {
             OrganizationId = request.OrganizationId,
             Name = request.Name,

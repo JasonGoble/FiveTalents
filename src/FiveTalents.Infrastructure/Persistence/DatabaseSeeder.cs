@@ -2,6 +2,7 @@ using FiveTalents.Domain.Auth;
 using FiveTalents.Domain.Families;
 using FiveTalents.Domain.Organizations;
 using FiveTalents.Infrastructure.Identity;
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,23 +23,25 @@ public static class DatabaseSeeder
         await db.Database.MigrateAsync();
 
         // Seed roles
-        foreach (var role in new[]
+        foreach (string? role in new[]
         {
             AppRoles.SystemAdmin, AppRoles.TopLevelAdmin, AppRoles.MidLevelAdmin,
             AppRoles.LocalAdmin, AppRoles.Staff, AppRoles.Member, AppRoles.ReadOnly
         })
         {
             if (!await roleManager.RoleExistsAsync(role))
+            {
                 await roleManager.CreateAsync(new IdentityRole(role));
+            }
         }
 
         // Seed default organization levels (Network → Region → Campus)
         if (!await db.OrganizationLevels.AnyAsync())
         {
             db.OrganizationLevels.AddRange(
-                new OrganizationLevel { Level = 1, DisplayName = "Network",  PluralDisplayName = "Networks",  IsEnabled = true },
-                new OrganizationLevel { Level = 2, DisplayName = "Region",   PluralDisplayName = "Regions",   IsEnabled = true },
-                new OrganizationLevel { Level = 3, DisplayName = "Campus",   PluralDisplayName = "Campuses",  IsEnabled = true }
+                new OrganizationLevel { Level = 1, DisplayName = "Network", PluralDisplayName = "Networks", IsEnabled = true },
+                new OrganizationLevel { Level = 2, DisplayName = "Region", PluralDisplayName = "Regions", IsEnabled = true },
+                new OrganizationLevel { Level = 3, DisplayName = "Campus", PluralDisplayName = "Campuses", IsEnabled = true }
             );
             await db.SaveChangesAsync();
         }
@@ -61,9 +64,9 @@ public static class DatabaseSeeder
         {
             var org = await db.Organizations.FirstAsync();
             db.FamilyRoles.AddRange(
-                new FamilyRole { OrganizationId = org.Id, Name = "Adult",  IsAdult = true,  SortOrder = 10, IsActive = true },
-                new FamilyRole { OrganizationId = org.Id, Name = "Child",  IsAdult = false, SortOrder = 20, IsActive = true },
-                new FamilyRole { OrganizationId = org.Id, Name = "Other",  IsAdult = true,  SortOrder = 99, IsActive = true }
+                new FamilyRole { OrganizationId = org.Id, Name = "Adult", IsAdult = true, SortOrder = 10, IsActive = true },
+                new FamilyRole { OrganizationId = org.Id, Name = "Child", IsAdult = false, SortOrder = 20, IsActive = true },
+                new FamilyRole { OrganizationId = org.Id, Name = "Other", IsAdult = true, SortOrder = 99, IsActive = true }
             );
             await db.SaveChangesAsync();
         }
@@ -73,13 +76,13 @@ public static class DatabaseSeeder
         {
             var org = await db.Organizations.FirstAsync();
             db.GroupTypes.AddRange(
-                new FiveTalents.Domain.Groups.GroupType { OrganizationId = org.Id, Name = "Small Group",      Color = "#4CAF50", IconName = "groups" },
-                new FiveTalents.Domain.Groups.GroupType { OrganizationId = org.Id, Name = "Ministry Team",    Color = "#2196F3", IconName = "volunteer_activism" },
-                new FiveTalents.Domain.Groups.GroupType { OrganizationId = org.Id, Name = "Bible Study",      Color = "#FF9800", IconName = "menu_book" },
-                new FiveTalents.Domain.Groups.GroupType { OrganizationId = org.Id, Name = "Prayer Group",     Color = "#9C27B0", IconName = "self_improvement" },
-                new FiveTalents.Domain.Groups.GroupType { OrganizationId = org.Id, Name = "Youth",            Color = "#F44336", IconName = "sports_soccer" },
-                new FiveTalents.Domain.Groups.GroupType { OrganizationId = org.Id, Name = "Children",         Color = "#FF5722", IconName = "child_care" },
-                new FiveTalents.Domain.Groups.GroupType { OrganizationId = org.Id, Name = "Leadership Team",  Color = "#607D8B", IconName = "star" }
+                new FiveTalents.Domain.Groups.GroupType { OrganizationId = org.Id, Name = "Small Group", Color = "#4CAF50", IconName = "groups" },
+                new FiveTalents.Domain.Groups.GroupType { OrganizationId = org.Id, Name = "Ministry Team", Color = "#2196F3", IconName = "volunteer_activism" },
+                new FiveTalents.Domain.Groups.GroupType { OrganizationId = org.Id, Name = "Bible Study", Color = "#FF9800", IconName = "menu_book" },
+                new FiveTalents.Domain.Groups.GroupType { OrganizationId = org.Id, Name = "Prayer Group", Color = "#9C27B0", IconName = "self_improvement" },
+                new FiveTalents.Domain.Groups.GroupType { OrganizationId = org.Id, Name = "Youth", Color = "#F44336", IconName = "sports_soccer" },
+                new FiveTalents.Domain.Groups.GroupType { OrganizationId = org.Id, Name = "Children", Color = "#FF5722", IconName = "child_care" },
+                new FiveTalents.Domain.Groups.GroupType { OrganizationId = org.Id, Name = "Leadership Team", Color = "#607D8B", IconName = "star" }
             );
             await db.SaveChangesAsync();
         }
@@ -89,7 +92,7 @@ public static class DatabaseSeeder
         if (await userManager.FindByEmailAsync(adminEmail) == null)
         {
             var org = await db.Organizations.FirstAsync();
-            var admin = new ApplicationUser
+            ApplicationUser admin = new ApplicationUser
             {
                 UserName = adminEmail,
                 Email = adminEmail,

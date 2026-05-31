@@ -2,6 +2,7 @@ using FiveTalents.Application.Organizations.Commands;
 using FiveTalents.Domain.Organizations;
 using FiveTalents.Infrastructure.Persistence;
 using FiveTalents.Tests.Unit.Helpers;
+
 using FluentAssertions;
 
 namespace FiveTalents.Tests.Unit.Organizations.Commands;
@@ -22,11 +23,11 @@ public class UpdateOrganizationCommandHandlerTests : IDisposable
     [Fact]
     public async Task Handle_WithExistingOrg_UpdatesProperties()
     {
-        var org = new Organization { Name = "Old Name", Level = 1, IsActive = true };
+        Organization org = new Organization { Name = "Old Name", Level = 1, IsActive = true };
         _db.Organizations.Add(org);
         await _db.SaveChangesAsync();
 
-        var command = new UpdateOrganizationCommand
+        UpdateOrganizationCommand command = new UpdateOrganizationCommand
         {
             Id = org.Id,
             Name = "New Name",
@@ -47,7 +48,7 @@ public class UpdateOrganizationCommandHandlerTests : IDisposable
     [Fact]
     public async Task Handle_WithNonExistentId_ThrowsKeyNotFoundException()
     {
-        var command = new UpdateOrganizationCommand { Id = 999, Name = "Ghost", Level = 1 };
+        UpdateOrganizationCommand command = new UpdateOrganizationCommand { Id = 999, Name = "Ghost", Level = 1 };
 
         var act = async () => await _handler.Handle(command, CancellationToken.None);
 
@@ -57,11 +58,11 @@ public class UpdateOrganizationCommandHandlerTests : IDisposable
     [Fact]
     public async Task Handle_WithDeletedOrg_ThrowsKeyNotFoundException()
     {
-        var org = new Organization { Name = "Deleted Org", Level = 1, IsDeleted = true };
+        Organization org = new Organization { Name = "Deleted Org", Level = 1, IsDeleted = true };
         _db.Organizations.Add(org);
         await _db.SaveChangesAsync();
 
-        var command = new UpdateOrganizationCommand { Id = org.Id, Name = "Revived", Level = 1 };
+        UpdateOrganizationCommand command = new UpdateOrganizationCommand { Id = org.Id, Name = "Revived", Level = 1 };
 
         var act = async () => await _handler.Handle(command, CancellationToken.None);
 

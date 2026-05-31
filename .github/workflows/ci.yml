@@ -21,6 +21,9 @@ jobs:
       - name: Restore local tools
         run: dotnet tool restore
 
+      - name: Format check
+        run: dotnet format --verify-no-changes
+
       - name: Build
         run: dotnet build --no-incremental
 

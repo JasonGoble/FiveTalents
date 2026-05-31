@@ -1,5 +1,8 @@
 using FiveTalents.Application.Common.Interfaces;
+using FiveTalents.Domain.Organizations;
+
 using FluentValidation;
+
 using MediatR;
 
 namespace FiveTalents.Application.Organizations.Commands;
@@ -43,7 +46,7 @@ public class CreateOrganizationCommandHandler(IApplicationDbContext db)
 {
     public async Task<int> Handle(CreateOrganizationCommand request, CancellationToken cancellationToken)
     {
-        var org = new Domain.Organizations.Organization
+        Organization org = new Domain.Organizations.Organization
         {
             Name = request.Name,
             Level = request.Level,

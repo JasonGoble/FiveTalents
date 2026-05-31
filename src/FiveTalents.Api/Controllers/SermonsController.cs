@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 namespace FiveTalents.Api.Controllers;
+
 public class SermonsController : BaseController
 {
     [HttpGet] public IActionResult GetAll(int organizationId, int page = 1, int pageSize = 12) => Ok(new { message = "TODO", organizationId });

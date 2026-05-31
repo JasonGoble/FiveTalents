@@ -1,15 +1,16 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+
 using FiveTalents.Application.Common.Interfaces;
-using FiveTalents.Domain.Auth;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using FiveTalents.Infrastructure.Identity;
+
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 
 namespace FiveTalents.Api.Controllers;
 
@@ -27,9 +28,11 @@ public class AuthController(
     {
         var user = await userManager.FindByEmailAsync(request.Email);
         if (user == null || !user.IsActive || !await userManager.CheckPasswordAsync(user, request.Password))
+        {
             return Unauthorized(new { message = "Invalid credentials" });
+        }
 
-        var token = await GenerateJwtTokenAsync(user);
+        string token = await GenerateJwtTokenAsync(user);
         user.LastLoginAt = DateTime.UtcNow;
         await userManager.UpdateAsync(user);
 
@@ -40,7 +43,7 @@ public class AuthController(
     [AllowAnonymous]
     public async Task<IActionResult> Register([FromBody] RegisterRequest request)
     {
-        var user = new ApplicationUser
+        ApplicationUser user = new ApplicationUser
         {
             UserName = request.Email,
             Email = request.Email,
@@ -50,7 +53,9 @@ public class AuthController(
 
         var result = await userManager.CreateAsync(user, request.Password);
         if (!result.Succeeded)
+        {
             return BadRequest(new { errors = result.Errors.Select(e => e.Description) });
+        }
 
         return Ok(new { message = "Registration successful" });
     }
@@ -60,11 +65,16 @@ public class AuthController(
     public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
     {
         var user = await userManager.GetUserAsync(User);
-        if (user == null) return Unauthorized();
+        if (user == null)
+        {
+            return Unauthorized();
+        }
 
         var result = await userManager.ChangePasswordAsync(user, request.CurrentPassword, request.NewPassword);
         if (!result.Succeeded)
+        {
             return BadRequest(new { errors = result.Errors.Select(e => e.Description) });
+        }
 
         return Ok(new { message = "Password changed successfully" });
     }
@@ -74,16 +84,21 @@ public class AuthController(
     public async Task<IActionResult> SetupAccount([FromBody] SetupAccountRequest request)
     {
         var user = await userManager.FindByEmailAsync(request.Email);
-        if (user == null) return BadRequest(new { message = "Invalid request" });
+        if (user == null)
+        {
+            return BadRequest(new { message = "Invalid request" });
+        }
 
         var result = await userManager.ResetPasswordAsync(user, request.Token, request.NewPassword);
         if (!result.Succeeded)
+        {
             return BadRequest(new { errors = result.Errors.Select(e => e.Description) });
+        }
 
         user.IsActive = true;
         await userManager.UpdateAsync(user);
 
-        var token = await GenerateJwtTokenAsync(user);
+        string token = await GenerateJwtTokenAsync(user);
         return Ok(new { token, user = await BuildUserResponseAsync(user) });
     }
 
@@ -100,10 +115,10 @@ public class AuthController(
     private async Task<string> GenerateJwtTokenAsync(ApplicationUser user)
     {
         var jwtSettings = configuration.GetSection("JwtSettings");
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Secret"]!));
-        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        SymmetricSecurityKey key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Secret"]!));
+        SigningCredentials credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-        var claims = new List<Claim>
+        List<Claim> claims = new List<Claim>
         {
             new(ClaimTypes.NameIdentifier, user.Id),
             new(ClaimTypes.Name, user.UserName!),
@@ -112,17 +127,21 @@ public class AuthController(
         };
 
         if (user.PrimaryOrganizationId.HasValue)
+        {
             claims.Add(new("organization_id", user.PrimaryOrganizationId.Value.ToString()));
+        }
 
         if (user.MemberId.HasValue)
+        {
             claims.Add(new("member_id", user.MemberId.Value.ToString()));
+        }
 
         // Compute accessible org IDs from all UserOrganizationRoles for this user
         var roles = await db.UserOrganizationRoles
             .Where(r => r.UserId == user.Id && r.IsActive)
             .ToListAsync();
 
-        var isSystemAdmin = await userManager.IsInRoleAsync(user, "SystemAdmin");
+        bool isSystemAdmin = await userManager.IsInRoleAsync(user, "SystemAdmin");
         if (isSystemAdmin)
         {
             claims.Add(new("system_admin", "true"));
@@ -130,18 +149,22 @@ public class AuthController(
         }
         else
         {
-            var accessibleOrgIds = new HashSet<int>();
+            HashSet<int> accessibleOrgIds = new HashSet<int>();
             foreach (var role in roles)
             {
                 var subtree = await hierarchyService.GetDescendantOrgIdsAsync(role.OrganizationId);
-                foreach (var id in subtree)
+                foreach (int id in subtree)
+                {
                     accessibleOrgIds.Add(id);
+                }
             }
-            foreach (var orgId in accessibleOrgIds)
+            foreach (int orgId in accessibleOrgIds)
+            {
                 claims.Add(new("accessible_org", orgId.ToString()));
+            }
         }
 
-        var token = new JwtSecurityToken(
+        JwtSecurityToken token = new JwtSecurityToken(
             issuer: jwtSettings["Issuer"],
             audience: jwtSettings["Audience"],
             claims: claims,

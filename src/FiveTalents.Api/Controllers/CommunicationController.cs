@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 namespace FiveTalents.Api.Controllers;
+
 public class CommunicationController : BaseController
 {
     [HttpGet("templates")] public IActionResult GetTemplates(int organizationId) => Ok(new { message = "TODO", organizationId });

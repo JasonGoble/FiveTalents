@@ -4,6 +4,7 @@ using FiveTalents.Domain.Families;
 using FiveTalents.Domain.Members;
 using FiveTalents.Infrastructure.Persistence;
 using FiveTalents.Tests.Unit.Helpers;
+
 using FluentAssertions;
 
 namespace FiveTalents.Tests.Unit.Families.Queries;
@@ -24,7 +25,7 @@ public class GetFamilyByIdQueryHandlerTests : IDisposable
     [Fact]
     public async Task Handle_WithExistingFamily_ReturnsDto()
     {
-        var family = new Family { OrganizationId = 1, Name = "Brown Family" };
+        Family family = new Family { OrganizationId = 1, Name = "Brown Family" };
         _db.Families.Add(family);
         await _db.SaveChangesAsync();
 
@@ -47,7 +48,7 @@ public class GetFamilyByIdQueryHandlerTests : IDisposable
     [Fact]
     public async Task Handle_WithDeletedFamily_ThrowsNotFoundException()
     {
-        var family = new Family { OrganizationId = 1, Name = "Gone", IsDeleted = true };
+        Family family = new Family { OrganizationId = 1, Name = "Gone", IsDeleted = true };
         _db.Families.Add(family);
         await _db.SaveChangesAsync();
 
@@ -59,13 +60,13 @@ public class GetFamilyByIdQueryHandlerTests : IDisposable
     [Fact]
     public async Task Handle_WithMembers_ReturnsMembersOrderedBySortOrder()
     {
-        var family = new Family { OrganizationId = 1, Name = "Carter Family" };
+        Family family = new Family { OrganizationId = 1, Name = "Carter Family" };
         _db.Families.Add(family);
-        var parent = new Member { OrganizationId = 1, FirstName = "Jim", LastName = "Carter" };
-        var child = new Member { OrganizationId = 1, FirstName = "Tim", LastName = "Carter" };
+        Member parent = new Member { OrganizationId = 1, FirstName = "Jim", LastName = "Carter" };
+        Member child = new Member { OrganizationId = 1, FirstName = "Tim", LastName = "Carter" };
         _db.Members.AddRange(parent, child);
-        var headRole = new FamilyRole { OrganizationId = 1, Name = "Head of Household", IsAdult = true, SortOrder = 1 };
-        var childRole = new FamilyRole { OrganizationId = 1, Name = "Child", IsAdult = false, SortOrder = 3 };
+        FamilyRole headRole = new FamilyRole { OrganizationId = 1, Name = "Head of Household", IsAdult = true, SortOrder = 1 };
+        FamilyRole childRole = new FamilyRole { OrganizationId = 1, Name = "Child", IsAdult = false, SortOrder = 3 };
         _db.FamilyRoles.AddRange(headRole, childRole);
         await _db.SaveChangesAsync();
         _db.FamilyMembers.AddRange(

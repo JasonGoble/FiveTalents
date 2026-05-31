@@ -1,6 +1,8 @@
 using System.Net;
 using System.Net.Mail;
+
 using FiveTalents.Application.Common.Interfaces;
+
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -21,17 +23,21 @@ public class SmtpEmailService(IOptions<SmtpSettings> options, ILogger<SmtpEmailS
             return;
         }
 
-        using var client = new SmtpClient(_settings.Host, _settings.Port);
+        using SmtpClient client = new SmtpClient(_settings.Host, _settings.Port);
         client.DeliveryMethod = SmtpDeliveryMethod.Network;
         client.EnableSsl = false;
 
         if (!string.IsNullOrWhiteSpace(_settings.Username))
+        {
             client.Credentials = new NetworkCredential(_settings.Username, _settings.Password);
+        }
 
-        var from = new MailAddress(_settings.FromAddress, _settings.FromName);
-        using var message = new MailMessage { From = from, Subject = subject, Body = body, IsBodyHtml = isHtml };
-        foreach (var recipient in recipients)
+        MailAddress from = new MailAddress(_settings.FromAddress, _settings.FromName);
+        using MailMessage message = new MailMessage { From = from, Subject = subject, Body = body, IsBodyHtml = isHtml };
+        foreach (string recipient in recipients)
+        {
             message.To.Add(recipient);
+        }
 
         await client.SendMailAsync(message, cancellationToken);
         logger.LogInformation("Email sent to {Recipients}: {Subject}", string.Join(", ", recipients), subject);

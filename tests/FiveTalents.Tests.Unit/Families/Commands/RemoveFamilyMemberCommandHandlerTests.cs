@@ -4,7 +4,9 @@ using FiveTalents.Domain.Families;
 using FiveTalents.Domain.Members;
 using FiveTalents.Infrastructure.Persistence;
 using FiveTalents.Tests.Unit.Helpers;
+
 using FluentAssertions;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace FiveTalents.Tests.Unit.Families.Commands;
@@ -24,9 +26,9 @@ public class RemoveFamilyMemberCommandHandlerTests : IDisposable
 
     private async Task<(Family family, Member member)> SeedWithMembershipAsync()
     {
-        var family = new Family { OrganizationId = 1, Name = "Smith Family" };
-        var member = new Member { OrganizationId = 1, FirstName = "Alice", LastName = "Smith" };
-        var role = new FamilyRole { OrganizationId = 1, Name = "Spouse", IsAdult = true, SortOrder = 2 };
+        Family family = new Family { OrganizationId = 1, Name = "Smith Family" };
+        Member member = new Member { OrganizationId = 1, FirstName = "Alice", LastName = "Smith" };
+        FamilyRole role = new FamilyRole { OrganizationId = 1, Name = "Spouse", IsAdult = true, SortOrder = 2 };
         _db.Families.Add(family);
         _db.Members.Add(member);
         _db.FamilyRoles.Add(role);
@@ -43,7 +45,7 @@ public class RemoveFamilyMemberCommandHandlerTests : IDisposable
 
         await _handler.Handle(new RemoveFamilyMemberCommand(family.Id, member.Id), CancellationToken.None);
 
-        var exists = await _db.FamilyMembers
+        bool exists = await _db.FamilyMembers
             .AnyAsync(fm => fm.FamilyId == family.Id && fm.MemberId == member.Id);
         exists.Should().BeFalse();
     }

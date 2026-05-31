@@ -1,6 +1,7 @@
 using FiveTalents.Application.Groups.Commands;
 using FiveTalents.Application.Groups.Queries;
 using FiveTalents.Domain.Groups;
+
 using Microsoft.AspNetCore.Mvc;
 
 namespace FiveTalents.Api.Controllers;
@@ -22,14 +23,18 @@ public class GroupsController : BaseController
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateGroupCommand command, CancellationToken ct)
     {
-        var id = await Mediator.Send(command, ct);
+        int id = await Mediator.Send(command, ct);
         return CreatedAtAction(nameof(GetById), new { id }, null);
     }
 
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, [FromBody] UpdateGroupCommand command, CancellationToken ct)
     {
-        if (id != command.Id) return BadRequest();
+        if (id != command.Id)
+        {
+            return BadRequest();
+        }
+
         await Mediator.Send(command, ct);
         return NoContent();
     }

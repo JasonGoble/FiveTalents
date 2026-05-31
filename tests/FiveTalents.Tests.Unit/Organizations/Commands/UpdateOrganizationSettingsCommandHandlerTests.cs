@@ -2,7 +2,9 @@ using FiveTalents.Application.Organizations.Commands;
 using FiveTalents.Domain.Organizations;
 using FiveTalents.Infrastructure.Persistence;
 using FiveTalents.Tests.Unit.Helpers;
+
 using FluentAssertions;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace FiveTalents.Tests.Unit.Organizations.Commands;
@@ -25,11 +27,13 @@ public class UpdateOrganizationSettingsCommandHandlerTests : IDisposable
     {
         _db.OrganizationSettings.Add(new OrganizationSettings
         {
-            OrganizationId = 1, Currency = "USD", FiscalYearStart = "01-01"
+            OrganizationId = 1,
+            Currency = "USD",
+            FiscalYearStart = "01-01"
         });
         await _db.SaveChangesAsync();
 
-        var command = new UpdateOrganizationSettingsCommand
+        UpdateOrganizationSettingsCommand command = new()
         {
             OrganizationId = 1,
             PrimaryColor = "#FF0000",
@@ -56,7 +60,7 @@ public class UpdateOrganizationSettingsCommandHandlerTests : IDisposable
     [Fact]
     public async Task Handle_WithNoExistingSettings_CreatesNewSettings()
     {
-        var command = new UpdateOrganizationSettingsCommand
+        UpdateOrganizationSettingsCommand command = new()
         {
             OrganizationId = 42,
             Currency = "GBP",

@@ -1,4 +1,5 @@
 using FiveTalents.Infrastructure.Persistence;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace FiveTalents.Tests.Unit.Helpers;

@@ -1,6 +1,5 @@
 namespace FiveTalents.Application.Common.Exceptions;
 
-public class NotFoundException : Exception
+public class NotFoundException(string name, object key) : Exception($"Entity '{name}' with key '{key}' was not found.")
 {
-    public NotFoundException(string name, object key) : base($"Entity '{name}' with key '{key}' was not found.") { }
 }

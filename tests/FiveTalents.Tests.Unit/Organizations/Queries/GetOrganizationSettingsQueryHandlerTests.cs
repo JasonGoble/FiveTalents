@@ -2,6 +2,7 @@ using FiveTalents.Application.Organizations.Queries;
 using FiveTalents.Domain.Organizations;
 using FiveTalents.Infrastructure.Persistence;
 using FiveTalents.Tests.Unit.Helpers;
+
 using FluentAssertions;
 
 namespace FiveTalents.Tests.Unit.Organizations.Queries;

@@ -1,4 +1,5 @@
 using FiveTalents.Application.Users.Queries;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

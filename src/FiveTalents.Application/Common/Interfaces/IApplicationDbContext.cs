@@ -9,44 +9,45 @@ using FiveTalents.Domain.Members;
 using FiveTalents.Domain.Organizations;
 using FiveTalents.Domain.Sermons;
 using FiveTalents.Domain.Volunteers;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace FiveTalents.Application.Common.Interfaces;
 
 public interface IApplicationDbContext
 {
-    DbSet<Organization> Organizations { get; }
-    DbSet<OrganizationLevel> OrganizationLevels { get; }
-    DbSet<OrganizationSettings> OrganizationSettings { get; }
-    DbSet<Member> Members { get; }
-    DbSet<Family> Families { get; }
-    DbSet<FamilyRole> FamilyRoles { get; }
-    DbSet<FamilyMember> FamilyMembers { get; }
-    DbSet<MemberTag> MemberTags { get; }
-    DbSet<ContactType> ContactTypes { get; }
-    DbSet<MemberAddress> MemberAddresses { get; }
-    DbSet<MemberEmail> MemberEmails { get; }
-    DbSet<MemberPhone> MemberPhones { get; }
-    DbSet<Group> Groups { get; }
-    DbSet<GroupType> GroupTypes { get; }
-    DbSet<GroupMember> GroupMembers { get; }
-    DbSet<GroupMeeting> GroupMeetings { get; }
-    DbSet<AttendanceSession> AttendanceSessions { get; }
-    DbSet<AttendanceRecord> AttendanceRecords { get; }
-    DbSet<Donation> Donations { get; }
-    DbSet<DonationFund> DonationFunds { get; }
-    DbSet<DonationPledge> DonationPledges { get; }
-    DbSet<DonationBatch> DonationBatches { get; }
-    DbSet<ChurchEvent> Events { get; }
-    DbSet<EventRegistration> EventRegistrations { get; }
-    DbSet<CommunicationTemplate> CommunicationTemplates { get; }
-    DbSet<CommunicationLog> CommunicationLogs { get; }
-    DbSet<VolunteerOpportunity> VolunteerOpportunities { get; }
-    DbSet<VolunteerAssignment> VolunteerAssignments { get; }
-    DbSet<Sermon> Sermons { get; }
-    DbSet<SermonSeries> SermonSeries { get; }
-    DbSet<SermonTag> SermonTags { get; }
-    DbSet<UserOrganizationRole> UserOrganizationRoles { get; }
+    public DbSet<Organization> Organizations { get; }
+    public DbSet<OrganizationLevel> OrganizationLevels { get; }
+    public DbSet<OrganizationSettings> OrganizationSettings { get; }
+    public DbSet<Member> Members { get; }
+    public DbSet<Family> Families { get; }
+    public DbSet<FamilyRole> FamilyRoles { get; }
+    public DbSet<FamilyMember> FamilyMembers { get; }
+    public DbSet<MemberTag> MemberTags { get; }
+    public DbSet<ContactType> ContactTypes { get; }
+    public DbSet<MemberAddress> MemberAddresses { get; }
+    public DbSet<MemberEmail> MemberEmails { get; }
+    public DbSet<MemberPhone> MemberPhones { get; }
+    public DbSet<Group> Groups { get; }
+    public DbSet<GroupType> GroupTypes { get; }
+    public DbSet<GroupMember> GroupMembers { get; }
+    public DbSet<GroupMeeting> GroupMeetings { get; }
+    public DbSet<AttendanceSession> AttendanceSessions { get; }
+    public DbSet<AttendanceRecord> AttendanceRecords { get; }
+    public DbSet<Donation> Donations { get; }
+    public DbSet<DonationFund> DonationFunds { get; }
+    public DbSet<DonationPledge> DonationPledges { get; }
+    public DbSet<DonationBatch> DonationBatches { get; }
+    public DbSet<ChurchEvent> Events { get; }
+    public DbSet<EventRegistration> EventRegistrations { get; }
+    public DbSet<CommunicationTemplate> CommunicationTemplates { get; }
+    public DbSet<CommunicationLog> CommunicationLogs { get; }
+    public DbSet<VolunteerOpportunity> VolunteerOpportunities { get; }
+    public DbSet<VolunteerAssignment> VolunteerAssignments { get; }
+    public DbSet<Sermon> Sermons { get; }
+    public DbSet<SermonSeries> SermonSeries { get; }
+    public DbSet<SermonTag> SermonTags { get; }
+    public DbSet<UserOrganizationRole> UserOrganizationRoles { get; }
 
-    Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
+    public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
