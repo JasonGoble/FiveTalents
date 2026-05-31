@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Passed to dotnet test via --settings coverlet.runsettings -->
-<!-- Threshold enforcement (70% line) is done in CI (#80) by parsing the output XML -->
+
 <RunSettings>
   <DataCollectionRunSettings>
     <DataCollectors>

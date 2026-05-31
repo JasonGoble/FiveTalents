@@ -1,36 +1,124 @@
 name: CI
 
 on:
+  push:
+    branches: [main]
   pull_request:
     branches: [main]
 
 jobs:
-  build-api:
-    name: Build API
+  dotnet-tests:
+    name: .NET Tests & Coverage
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
-      - name: Restore
-        run: dotnet restore src/FiveTalents.Api/FiveTalents.Api.csproj
-      - name: Build
-        run: dotnet build src/FiveTalents.Api/FiveTalents.Api.csproj -c Release --no-restore
 
-  build-web:
-    name: Build Angular
+      - name: Restore local tools
+        run: dotnet tool restore
+
+      - name: Build
+        run: dotnet build --no-incremental
+
+      - name: Test with coverage
+        run: dotnet test --settings coverlet.runsettings --results-directory coverage/raw
+
+      - name: Generate coverage summary
+        run: dotnet reportgenerator -reports:"coverage/raw/**/*.xml" -targetdir:"coverage/html" -reporttypes:JsonSummary
+
+      - name: Enforce coverage threshold
+        run: |
+          python3 - <<'EOF'
+          import json, sys
+          with open('coverage/html/Summary.json') as f:
+              data = json.load(f)
+          cov = data['summary']['linecoverage']
+          threshold = 15
+          print(f'Line coverage: {cov:.1f}% (threshold: {threshold}%)')
+          if cov < threshold:
+              print(f'::error::Coverage {cov:.1f}% is below the {threshold}% minimum')
+              sys.exit(1)
+          EOF
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report
+          path: coverage/html/
+          retention-days: 14
+
+  angular-tests:
+    name: Angular Tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: '22'
           cache: npm
           cache-dependency-path: web/five-talents-web/package-lock.json
-      - name: Install
+
+      - name: Install dependencies
+        working-directory: web/five-talents-web
         run: npm ci
+
+      - name: Run tests
         working-directory: web/five-talents-web
-      - name: Build
-        run: npm run build
+        run: npm test
+
+  playwright-e2e:
+    name: E2E Tests (Playwright)
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false || github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/five-talents-web/package-lock.json
+
+      - name: Create API SQLite config
+        run: |
+          cat > src/FiveTalents.Api/appsettings.Development.json <<'JSON'
+          {
+            "DatabaseProvider": "Sqlite",
+            "ConnectionStrings": {
+              "DefaultConnection": "Data Source=FiveTalents.db"
+            }
+          }
+          JSON
+
+      - name: Install Node dependencies
         working-directory: web/five-talents-web
+        run: npm ci
+
+      - name: Install Playwright browsers
+        working-directory: web/five-talents-web
+        run: npx playwright install chromium --with-deps
+
+      - name: Run E2E tests
+        working-directory: web/five-talents-web
+        run: npm run e2e
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: web/five-talents-web/playwright-report/
+          retention-days: 7
