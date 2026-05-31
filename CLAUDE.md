@@ -158,4 +158,4 @@ The `coverage/` directory is gitignored. The `reportgenerator` tool is declared 
 
 ## Architecture Decision Records
 
-ADRs live in `docs/decisions/`. See `docs/decisions/README.md` for the index. Current range: 0001–0015.
+ADRs live in `docs/decisions/`. See `docs/decisions/README.md` for the index. Current range: 0001–0016.
