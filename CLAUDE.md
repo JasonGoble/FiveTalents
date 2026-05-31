@@ -155,7 +155,7 @@ xdg-open coverage/html/index.html   # Linux
 open coverage/html/index.html       # macOS
 ```
 
-The `coverage/` directory is gitignored. The `reportgenerator` tool is declared in `.config/dotnet-tools.json`; run `dotnet tool restore` once after cloning. Threshold enforcement (70% line) is implemented in CI (#80) by parsing the output XML — it is not enforced locally by this command.
+The `coverage/` directory is gitignored. The `reportgenerator` tool is declared in `.config/dotnet-tools.json`; run `dotnet tool restore` once after cloning. Threshold enforcement (**70% line**) is enforced in CI by parsing the output XML. PostgreSQL migration files are excluded from coverage via `coverlet.runsettings` (auto-generated EF scaffolding). Current coverage is ~86% with exclusions applied.
 
 ## Architecture Decision Records
 

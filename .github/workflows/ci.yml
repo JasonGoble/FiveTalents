@@ -40,7 +40,7 @@ jobs:
           with open('coverage/html/Summary.json') as f:
               data = json.load(f)
           cov = data['summary']['linecoverage']
-          threshold = 15
+          threshold = 70
           print(f'Line coverage: {cov:.1f}% (threshold: {threshold}%)')
           if cov < threshold:
               print(f'::error::Coverage {cov:.1f}% is below the {threshold}% minimum')

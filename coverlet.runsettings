@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <RunSettings>
   <DataCollectionRunSettings>
     <DataCollectors>
       <DataCollector friendlyName="XPlat Code Coverage">
         <Configuration>
           <Format>opencover</Format>
+          <!-- Exclude auto-generated PostgreSQL migration files; they are EF Core
+               scaffolding that is never exercised by unit or integration tests.
+               SQLite migrations (FiveTalents.Migrations.Sqlite project) are kept
+               in scope — they run in every integration test and are 98%+ covered. -->
+          <ExcludeByFile>**/FiveTalents.Infrastructure/Migrations/*</ExcludeByFile>
         </Configuration>
       </DataCollector>
     </DataCollectors>
