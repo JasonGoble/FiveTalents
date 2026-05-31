@@ -1,3 +1,4 @@
+using FiveTalents.Application.Organizations.DTOs;
 using FiveTalents.Application.Organizations.Queries;
 using FiveTalents.Domain.Members;
 using FiveTalents.Domain.Organizations;
