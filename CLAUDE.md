@@ -64,7 +64,8 @@ Create a GitHub issue for **every** reported defect, even small ones. The value 
 For any .NET changes, run in order:
 
 ```bash
-# 1. Verify editorconfig compliance (fix violations before proceeding)
+# 1. Auto-fix editorconfig violations, then verify clean
+dotnet format
 dotnet format --verify-no-changes
 
 # 2. Compile
