@@ -11,7 +11,7 @@ public record FamilyMemberDto(
     bool IsAdult
 );
 
-public record FamilySummaryDto(int Id, string Name, int MemberCount, int OrganizationId);
+public record FamilySummaryDto(int Id, string Name, int MemberCount, int OrganizationId, string? OrgName = null);
 
 public record MemberFamilyDto(int FamilyId, string FamilyName, int RoleId, string RoleName, bool IsAdult);
 

@@ -9,8 +9,9 @@ export class GroupService {
   private http = inject(HttpClient);
   private base = `${environment.apiUrl}/groups`;
 
-  getAll(organizationId: number, search?: string, status?: GroupStatus): Observable<Group[]> {
-    let params = new HttpParams().set('organizationId', organizationId);
+  getAll(organizationId: number | null, search?: string, status?: GroupStatus): Observable<Group[]> {
+    let params = new HttpParams();
+    if (organizationId !== null) params = params.set('organizationId', organizationId);
     if (search) params = params.set('search', search);
     if (status) params = params.set('status', status);
     return this.http.get<Group[]>(this.base, { params });

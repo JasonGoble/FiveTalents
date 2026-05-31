@@ -15,6 +15,18 @@
     <mat-icon matSuffix>search</mat-icon>
   </mat-form-field>
 
+  @if (isAdmin()) {
+    <mat-form-field appearance="outline" style="max-width:220px">
+      <mat-label>Organization</mat-label>
+      <mat-select [value]="selectedOrgId()" (selectionChange)="onOrgChange($event.value)">
+        <mat-option [value]="null">All Organizations</mat-option>
+        @for (org of orgs(); track org.id) {
+          <mat-option [value]="org.id">{{ org.name }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  }
+
   @if (isMobile()) {
     <mat-form-field appearance="outline" class="filter-select">
       <mat-label>Filter By</mat-label>
@@ -64,6 +76,9 @@
                   <mat-icon class="type-icon">{{ g.groupTypeIcon }}</mat-icon>
                 }
                 <span class="type-name">{{ g.groupTypeName }}</span>
+                @if (isAdmin() && selectedOrgId() === null && g.orgName) {
+                  <span class="org-name-chip">{{ g.orgName }}</span>
+                }
               </div>
             </div>
 

@@ -23,7 +23,8 @@ public record GroupDto(
     int? MaxCapacity,
     bool IsOpenToNewMembers,
     string? ImageUrl,
-    int OrganizationId
+    int OrganizationId,
+    string? OrgName = null
 );
 
 public record GroupTypeSummaryDto(int Id, string Name, string? Color, string? IconName);

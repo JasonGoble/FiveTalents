@@ -19,6 +19,7 @@ export interface FamilySummary {
   name: string;
   memberCount: number;
   organizationId: number;
+  orgName?: string;
 }
 
 export interface Family {

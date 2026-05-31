@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
@@ -17,8 +17,10 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { MemberService } from '../../core/services/member.service';
+import { OrganizationService } from '../../core/services/organization.service';
 import { AuthService } from '../../core/services/auth.service';
 import { MemberStatus, MemberSummary } from '../../core/models/member.models';
+import { Organization } from '../../core/models/organization.models';
 
 @Component({
   selector: 'app-members',
@@ -34,6 +36,7 @@ import { MemberStatus, MemberSummary } from '../../core/models/member.models';
 })
 export class MembersComponent implements OnInit {
   private memberService = inject(MemberService);
+  private orgService = inject(OrganizationService);
   private auth = inject(AuthService);
   private router = inject(Router);
   private bp = inject(BreakpointObserver);
@@ -43,7 +46,17 @@ export class MembersComponent implements OnInit {
     { initialValue: false }
   );
 
-  columns = ['fullName', 'primaryEmail', 'primaryPhone', 'status', 'actions'];
+  isAdmin = computed(() => this.auth.currentUser()?.isSystemAdmin ?? false);
+  orgs = signal<Organization[]>([]);
+  selectedOrgId = signal<number | null>(null);
+
+  get columns() {
+    const showOrg = this.isAdmin() && this.selectedOrgId() === null;
+    return showOrg
+      ? ['fullName', 'orgName', 'primaryEmail', 'primaryPhone', 'status', 'actions']
+      : ['fullName', 'primaryEmail', 'primaryPhone', 'status', 'actions'];
+  }
+
   members = signal<MemberSummary[]>([]);
   totalCount = signal(0);
   loading = signal(false);
@@ -54,6 +67,9 @@ export class MembersComponent implements OnInit {
   statusControl = new FormControl<number | null>(null);
 
   ngOnInit() {
+    if (this.isAdmin()) {
+      this.orgService.getAll().subscribe(orgs => this.orgs.set(orgs));
+    }
     this.load();
     this.searchControl.valueChanges.pipe(debounceTime(400), distinctUntilChanged())
       .subscribe(() => { this.pageNumber = 1; this.load(); });
@@ -61,9 +77,17 @@ export class MembersComponent implements OnInit {
       .subscribe(() => { this.pageNumber = 1; this.load(); });
   }
 
+  onOrgChange(orgId: number | null) {
+    this.selectedOrgId.set(orgId);
+    this.pageNumber = 1;
+    this.load();
+  }
+
   load() {
-    const orgId = this.auth.currentUser()?.primaryOrganizationId;
-    if (!orgId) return;
+    const orgId = this.isAdmin()
+      ? this.selectedOrgId()
+      : (this.auth.currentUser()?.primaryOrganizationId ?? null);
+    if (!this.isAdmin() && !orgId) return;
     this.loading.set(true);
     this.memberService.getAll(orgId, this.pageNumber, this.pageSize,
       this.searchControl.value ?? undefined,

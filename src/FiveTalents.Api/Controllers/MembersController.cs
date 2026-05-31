@@ -11,7 +11,7 @@ public class MembersController : BaseController
 {
     [HttpGet]
     public async Task<IActionResult> GetAll(
-        int organizationId, int page = 1, int pageSize = 25,
+        int? organizationId = null, int page = 1, int pageSize = 25,
         string? search = null, MemberStatus? status = null,
         bool includeChildOrgs = false,
         CancellationToken ct = default)

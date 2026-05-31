@@ -15,7 +15,9 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Group, GroupStatus } from '../../core/models/group.models';
+import { Organization } from '../../core/models/organization.models';
 import { GroupService } from '../../core/services/group.service';
+import { OrganizationService } from '../../core/services/organization.service';
 import { AuthService } from '../../core/services/auth.service';
 import { GroupFormDialogComponent } from './group-form.dialog';
 
@@ -55,6 +57,7 @@ const STATUS_COLORS: Record<GroupStatus, { bg: string; color: string }> = {
 })
 export class GroupsComponent implements OnInit {
   private groupService = inject(GroupService);
+  private orgService = inject(OrganizationService);
   private authService = inject(AuthService);
   private dialog = inject(MatDialog);
   private bp = inject(BreakpointObserver);
@@ -63,6 +66,10 @@ export class GroupsComponent implements OnInit {
     this.bp.observe('(max-width: 767px)').pipe(map(r => r.matches)),
     { initialValue: false }
   );
+
+  isAdmin = computed(() => this.authService.currentUser()?.isSystemAdmin ?? false);
+  orgs = signal<Organization[]>([]);
+  selectedOrgId = signal<number | null>(null);
 
   readonly statusFilters = STATUS_FILTERS;
 
@@ -83,13 +90,26 @@ export class GroupsComponent implements OnInit {
     return list;
   });
 
-  private get orgId(): number {
-    return this.authService.currentUser()?.primaryOrganizationId ?? 0;
+  private get orgId(): number | null {
+    return this.isAdmin()
+      ? this.selectedOrgId()
+      : (this.authService.currentUser()?.primaryOrganizationId ?? null);
   }
 
-  ngOnInit() { this.load(); }
+  ngOnInit() {
+    if (this.isAdmin()) {
+      this.orgService.getAll().subscribe(orgs => this.orgs.set(orgs));
+    }
+    this.load();
+  }
+
+  onOrgChange(orgId: number | null) {
+    this.selectedOrgId.set(orgId);
+    this.load();
+  }
 
   private async load() {
+    if (!this.isAdmin() && !this.orgId) return;
     this.loading.set(true);
     try {
       const groups = await firstValueFrom(this.groupService.getAll(this.orgId));
@@ -100,10 +120,11 @@ export class GroupsComponent implements OnInit {
   }
 
   openForm(group?: Group) {
+    const orgId = this.orgId ?? this.authService.currentUser()?.primaryOrganizationId ?? 0;
     const ref = this.dialog.open(GroupFormDialogComponent, {
       width: '620px',
       maxWidth: '95vw',
-      data: { organizationId: this.orgId, group },
+      data: { organizationId: orgId, group },
     });
     ref.afterClosed().subscribe(saved => { if (saved) this.load(); });
   }

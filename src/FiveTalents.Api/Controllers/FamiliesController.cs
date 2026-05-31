@@ -8,7 +8,7 @@ namespace FiveTalents.Api.Controllers;
 public class FamiliesController : BaseController
 {
     [HttpGet]
-    public async Task<IActionResult> GetAll(int organizationId, CancellationToken ct)
+    public async Task<IActionResult> GetAll(int? organizationId = null, CancellationToken ct = default)
         => Ok(await Mediator.Send(new GetFamiliesQuery(organizationId), ct));
 
     [HttpGet("member/{memberId}")]
