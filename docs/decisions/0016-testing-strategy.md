@@ -49,7 +49,7 @@ The main forces:
 
 - **Tool:** Coverlet (`coverlet.collector`) on both test projects; output format `opencover`
 - **Report:** `reportgenerator` (local tool in `.config/dotnet-tools.json`) generates an HTML report to `coverage/html/`
-- **Threshold:** Enforced in CI at **15%** today (baseline ~17%); target is **70% line coverage**. The threshold is raised incrementally as test coverage grows — see the CI workflow step for the current value
+- **Threshold:** Enforced in CI at **70% line coverage**. PostgreSQL migration files (`FiveTalents.Infrastructure/Migrations/*.cs`) are excluded from coverage via `coverlet.runsettings` — they are auto-generated EF Core scaffolding, not business logic. With that exclusion, current line coverage is ~86%
 
 ### CI (GitHub Actions)
 
