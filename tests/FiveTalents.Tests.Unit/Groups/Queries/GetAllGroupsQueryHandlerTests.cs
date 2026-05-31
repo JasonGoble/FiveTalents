@@ -1,21 +1,28 @@
+using FiveTalents.Application.Common.Interfaces;
 using FiveTalents.Application.Groups.Queries;
+using FiveTalents.Domain.Auth;
 using FiveTalents.Domain.Groups;
 using FiveTalents.Infrastructure.Persistence;
 using FiveTalents.Tests.Unit.Helpers;
 
 using FluentAssertions;
 
+using NSubstitute;
+
 namespace FiveTalents.Tests.Unit.Groups.Queries;
 
 public class GetAllGroupsQueryHandlerTests : IDisposable
 {
     private readonly ApplicationDbContext _db;
+    private readonly ICurrentUserService _currentUser;
     private readonly GetAllGroupsQueryHandler _handler;
 
     public GetAllGroupsQueryHandlerTests()
     {
         _db = TestDbContextFactory.Create();
-        _handler = new GetAllGroupsQueryHandler(_db);
+        _currentUser = Substitute.For<ICurrentUserService>();
+        _currentUser.IsInRole(AppRoles.SystemAdmin).Returns(false);
+        _handler = new GetAllGroupsQueryHandler(_db, _currentUser);
     }
 
     public void Dispose() => _db.Dispose();

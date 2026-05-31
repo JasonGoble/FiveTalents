@@ -1,6 +1,8 @@
+using FiveTalents.Application.Common.Exceptions;
 using FiveTalents.Application.Common.Interfaces;
 using FiveTalents.Application.Common.Models;
 using FiveTalents.Application.Members.DTOs;
+using FiveTalents.Domain.Auth;
 using FiveTalents.Domain.Members;
 
 using MediatR;
@@ -10,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 namespace FiveTalents.Application.Members.Queries;
 
 public record GetMembersQuery(
-    int OrganizationId,
+    int? OrganizationId,
     int PageNumber = 1,
     int PageSize = 25,
     string? Search = null,
@@ -20,30 +22,44 @@ public record GetMembersQuery(
 
 public class GetMembersQueryHandler(
     IApplicationDbContext db,
-    IOrganizationHierarchyService hierarchyService
+    IOrganizationHierarchyService hierarchyService,
+    ICurrentUserService currentUser
 ) : IRequestHandler<GetMembersQuery, PaginatedResult<MemberSummaryDto>>
 {
     public async Task<PaginatedResult<MemberSummaryDto>> Handle(GetMembersQuery request, CancellationToken cancellationToken)
     {
-        IReadOnlyList<int> orgIds;
-        if (request.IncludeChildOrgs)
+        bool isSystemAdmin = currentUser.IsInRole(AppRoles.SystemAdmin);
+
+        if (request.OrganizationId is null && !isSystemAdmin)
         {
-            orgIds = await hierarchyService.GetDescendantOrgIdsAsync(request.OrganizationId, cancellationToken);
+            throw new ForbiddenAccessException();
+        }
+
+        // null OrganizationId = SystemAdmin "see all" — orgIds left empty means no org filter
+        IReadOnlyList<int> orgIds;
+        if (request.OrganizationId is null)
+        {
+            orgIds = [];
+        }
+        else if (request.IncludeChildOrgs)
+        {
+            orgIds = await hierarchyService.GetDescendantOrgIdsAsync(request.OrganizationId.Value, cancellationToken);
         }
         else
         {
-            orgIds = [request.OrganizationId];
+            orgIds = [request.OrganizationId.Value];
         }
 
-        var explicitMemberUserIds = request.IncludeChildOrgs
+        List<string> explicitMemberUserIds = request.IncludeChildOrgs && request.OrganizationId.HasValue
             ? await db.UserOrganizationRoles
-                .Where(r => r.OrganizationId == request.OrganizationId && r.IsActive)
+                .Where(r => r.OrganizationId == request.OrganizationId.Value && r.IsActive)
                 .Select(r => r.UserId)
                 .ToListAsync(cancellationToken)
             : [];
 
-        var query = db.Members
-            .Where(m => orgIds.Contains(m.OrganizationId) && !m.IsDeleted);
+        IQueryable<Member> query = orgIds.Count == 0
+            ? db.Members.Where(m => !m.IsDeleted)
+            : db.Members.Where(m => orgIds.Contains(m.OrganizationId) && !m.IsDeleted);
 
         if (!string.IsNullOrWhiteSpace(request.Search))
         {
@@ -80,19 +96,22 @@ public class GetMembersQueryHandler(
             })
             .ToListAsync(cancellationToken);
 
+        bool showOrgNames = isSystemAdmin || request.IncludeChildOrgs;
         Dictionary<int, string> orgNames = [];
-        if (request.IncludeChildOrgs)
+        if (showOrgNames)
         {
-            orgNames = await db.Organizations
-                .Where(o => orgIds.Contains(o.Id))
-                .ToDictionaryAsync(o => o.Id, o => o.Name, cancellationToken);
+            orgNames = orgIds.Count == 0
+                ? await db.Organizations.ToDictionaryAsync(o => o.Id, o => o.Name, cancellationToken)
+                : await db.Organizations
+                    .Where(o => orgIds.Contains(o.Id))
+                    .ToDictionaryAsync(o => o.Id, o => o.Name, cancellationToken);
         }
 
         List<MemberSummaryDto> items = raw.Select(m =>
         {
-            bool isDirectOrg = m.OrganizationId == request.OrganizationId;
+            bool isDirectOrg = !isSystemAdmin && m.OrganizationId == request.OrganizationId;
             bool hasExplicitRole = m.UserId != null && explicitMemberUserIds.Contains(m.UserId);
-            bool showContact = isDirectOrg || hasExplicitRole;
+            bool showContact = isSystemAdmin || isDirectOrg || hasExplicitRole;
 
             return new MemberSummaryDto(
                 Id: m.Id,
@@ -101,9 +120,7 @@ public class GetMembersQueryHandler(
                 PrimaryPhone: showContact || m.SharePhoneWithNetwork ? m.PrimaryPhone : null,
                 Status: m.Status,
                 OrganizationId: m.OrganizationId,
-                OrgName: request.IncludeChildOrgs && !isDirectOrg
-                    ? orgNames.GetValueOrDefault(m.OrganizationId)
-                    : null
+                OrgName: showOrgNames ? orgNames.GetValueOrDefault(m.OrganizationId) : null
             );
         }).ToList();
 

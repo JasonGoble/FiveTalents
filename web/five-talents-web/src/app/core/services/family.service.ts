@@ -20,10 +20,11 @@ export class FamilyService {
     });
   }
 
-  getAll(organizationId: number): Observable<FamilySummary[]> {
-    return this.http.get<FamilySummary[]>(this.base, {
-      params: new HttpParams().set('organizationId', organizationId),
-    });
+  getAll(organizationId: number | null): Observable<FamilySummary[]> {
+    const params = organizationId !== null
+      ? new HttpParams().set('organizationId', organizationId)
+      : new HttpParams();
+    return this.http.get<FamilySummary[]>(this.base, { params });
   }
 
   getById(id: number): Observable<Family> {

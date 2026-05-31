@@ -30,6 +30,7 @@ export interface Group {
   isOpenToNewMembers: boolean;
   imageUrl?: string;
   organizationId: number;
+  orgName?: string;
 }
 
 export interface CreateGroupRequest {

@@ -1,5 +1,7 @@
+using FiveTalents.Application.Common.Exceptions;
 using FiveTalents.Application.Common.Interfaces;
 using FiveTalents.Application.Groups.DTOs;
+using FiveTalents.Domain.Auth;
 using FiveTalents.Domain.Groups;
 
 using MediatR;
@@ -8,15 +10,28 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FiveTalents.Application.Groups.Queries;
 
-public record GetAllGroupsQuery(int OrganizationId, string? Search = null, GroupStatus? Status = null)
+public record GetAllGroupsQuery(int? OrganizationId, string? Search = null, GroupStatus? Status = null)
     : IRequest<List<GroupDto>>;
 
-public class GetAllGroupsQueryHandler(IApplicationDbContext db) : IRequestHandler<GetAllGroupsQuery, List<GroupDto>>
+public class GetAllGroupsQueryHandler(IApplicationDbContext db, ICurrentUserService currentUser)
+    : IRequestHandler<GetAllGroupsQuery, List<GroupDto>>
 {
     public async Task<List<GroupDto>> Handle(GetAllGroupsQuery request, CancellationToken cancellationToken)
     {
-        var query = db.Groups
-            .Where(g => g.OrganizationId == request.OrganizationId && !g.IsDeleted);
+        bool isSystemAdmin = currentUser.IsInRole(AppRoles.SystemAdmin);
+
+        if (request.OrganizationId is null && !isSystemAdmin)
+        {
+            throw new ForbiddenAccessException();
+        }
+
+        Dictionary<int, string> orgNames = isSystemAdmin
+            ? await db.Organizations.ToDictionaryAsync(o => o.Id, o => o.Name, cancellationToken)
+            : [];
+
+        IQueryable<Group> query = request.OrganizationId is null
+            ? db.Groups.Where(g => !g.IsDeleted)
+            : db.Groups.Where(g => g.OrganizationId == request.OrganizationId && !g.IsDeleted);
 
         if (!string.IsNullOrWhiteSpace(request.Search))
         {
@@ -29,7 +44,7 @@ public class GetAllGroupsQueryHandler(IApplicationDbContext db) : IRequestHandle
             query = query.Where(g => g.Status == request.Status);
         }
 
-        return await query
+        List<GroupDto> results = await query
             .OrderBy(g => g.Name)
             .Select(g => new GroupDto(
                 g.Id,
@@ -55,5 +70,12 @@ public class GetAllGroupsQueryHandler(IApplicationDbContext db) : IRequestHandle
                 g.OrganizationId
             ))
             .ToListAsync(cancellationToken);
+
+        if (isSystemAdmin)
+        {
+            results = results.Select(g => g with { OrgName = orgNames.GetValueOrDefault(g.OrganizationId) }).ToList();
+        }
+
+        return results;
     }
 }

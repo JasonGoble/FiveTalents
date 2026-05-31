@@ -1,5 +1,6 @@
 using FiveTalents.Application.Common.Interfaces;
 using FiveTalents.Application.Members.Queries;
+using FiveTalents.Domain.Auth;
 using FiveTalents.Domain.Members;
 using FiveTalents.Infrastructure.Persistence;
 using FiveTalents.Tests.Unit.Helpers;
@@ -14,13 +15,16 @@ public class GetMembersQueryHandlerTests : IDisposable
 {
     private readonly ApplicationDbContext _db;
     private readonly IOrganizationHierarchyService _hierarchy;
+    private readonly ICurrentUserService _currentUser;
     private readonly GetMembersQueryHandler _handler;
 
     public GetMembersQueryHandlerTests()
     {
         _db = TestDbContextFactory.Create();
         _hierarchy = Substitute.For<IOrganizationHierarchyService>();
-        _handler = new GetMembersQueryHandler(_db, _hierarchy);
+        _currentUser = Substitute.For<ICurrentUserService>();
+        _currentUser.IsInRole(AppRoles.SystemAdmin).Returns(false);
+        _handler = new GetMembersQueryHandler(_db, _hierarchy, _currentUser);
     }
 
     public void Dispose() => _db.Dispose();

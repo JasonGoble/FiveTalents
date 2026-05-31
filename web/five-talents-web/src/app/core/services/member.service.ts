@@ -9,12 +9,12 @@ export class MemberService {
   private http = inject(HttpClient);
   private baseUrl = `${environment.apiUrl}/members`;
 
-  getAll(organizationId: number, page = 1, pageSize = 25, search?: string, status?: MemberStatus, includeChildOrgs = false) {
+  getAll(organizationId: number | null, page = 1, pageSize = 25, search?: string, status?: MemberStatus, includeChildOrgs = false) {
     let params = new HttpParams()
-      .set('organizationId', organizationId)
       .set('page', page)
       .set('pageSize', pageSize)
       .set('includeChildOrgs', includeChildOrgs);
+    if (organizationId !== null) params = params.set('organizationId', organizationId);
     if (search) params = params.set('search', search);
     if (status !== undefined) params = params.set('status', status);
     return this.http.get<PaginatedResult<MemberSummary>>(this.baseUrl, { params });

@@ -1,4 +1,6 @@
+using FiveTalents.Application.Common.Interfaces;
 using FiveTalents.Application.Families.Queries;
+using FiveTalents.Domain.Auth;
 using FiveTalents.Domain.Families;
 using FiveTalents.Domain.Members;
 using FiveTalents.Infrastructure.Persistence;
@@ -6,17 +8,22 @@ using FiveTalents.Tests.Unit.Helpers;
 
 using FluentAssertions;
 
+using NSubstitute;
+
 namespace FiveTalents.Tests.Unit.Families.Queries;
 
 public class GetFamiliesQueryHandlerTests : IDisposable
 {
     private readonly ApplicationDbContext _db;
+    private readonly ICurrentUserService _currentUser;
     private readonly GetFamiliesQueryHandler _handler;
 
     public GetFamiliesQueryHandlerTests()
     {
         _db = TestDbContextFactory.Create();
-        _handler = new GetFamiliesQueryHandler(_db);
+        _currentUser = Substitute.For<ICurrentUserService>();
+        _currentUser.IsInRole(AppRoles.SystemAdmin).Returns(false);
+        _handler = new GetFamiliesQueryHandler(_db, _currentUser);
     }
 
     public void Dispose() => _db.Dispose();

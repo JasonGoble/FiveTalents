@@ -9,7 +9,7 @@ namespace FiveTalents.Api.Controllers;
 public class GroupsController : BaseController
 {
     [HttpGet]
-    public async Task<IActionResult> GetAll(int organizationId, string? search, GroupStatus? status, CancellationToken ct)
+    public async Task<IActionResult> GetAll(int? organizationId = null, string? search = null, GroupStatus? status = null, CancellationToken ct = default)
         => Ok(await Mediator.Send(new GetAllGroupsQuery(organizationId, search, status), ct));
 
     [HttpGet("{id}")]
