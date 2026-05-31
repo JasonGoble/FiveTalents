@@ -29,9 +29,10 @@ public class IntegrationTestFactory : WebApplicationFactory<Program>
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+        builder.UseEnvironment("Testing");
+
         builder.ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(new Dictionary<string, string?>
         {
-            ["DatabaseProvider"] = "Sqlite",
             ["JwtSettings:Secret"] = JwtTokenHelper.TestSecret,
             ["JwtSettings:Issuer"] = JwtTokenHelper.TestIssuer,
             ["JwtSettings:Audience"] = JwtTokenHelper.TestAudience,
