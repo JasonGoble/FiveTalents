@@ -75,6 +75,11 @@ app.MapControllers();
 
 await FiveTalents.Infrastructure.Persistence.DatabaseSeeder.SeedAsync(app.Services);
 
+if (app.Environment.IsDevelopment())
+{
+    await FiveTalents.Infrastructure.Persistence.DevDataSeeder.SeedAsync(app.Services);
+}
+
 app.Run();
 
 public partial class Program { }
