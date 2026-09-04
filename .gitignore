@@ -13,6 +13,9 @@ logs/
 **/appsettings.Development.json
 **/appsettings.Local.json
 
+# Personal multi-root workspace file (not repo-specific)
+*.code-workspace
+
 # SQLite dev database
 *.db
 *.db-shm
