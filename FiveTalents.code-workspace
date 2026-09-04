@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../FiveTalents.Calendar"
+		},
+		{
+			"path": "../FiveTalents-site"
+		}
+	],
+	"settings": {}
+}

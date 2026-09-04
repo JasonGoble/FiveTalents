@@ -1,6 +1,8 @@
-﻿# FiveTalents — Claude Working Guide
+﻿# FiveTalents — Agent Working Guide
 
-Project conventions and technical gotchas for AI-assisted development on this repo.
+Project conventions and technical gotchas for AI-assisted development on this repo. See also
+[docs/ai-agent-notes.md](docs/ai-agent-notes.md) for brand voice, Angular patterns, and testing
+conventions carried over from earlier sessions.
 
 ## Tech Stack (quick reference)
 
