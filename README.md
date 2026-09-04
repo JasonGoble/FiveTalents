@@ -6,7 +6,7 @@
 
 Inspired by the Parable of the Talents (Matthew 25:14–30), FiveTalents is a free, open-source church management platform built for small-to-mid-sized churches — Anglican, Presbyterian, Lutheran, Methodist, and Reformed traditions especially. It gives any congregation modern tools to shepherd their people, coordinate ministries, and steward resources faithfully, without the complexity or cost of enterprise ChMS software.
 
-> **A note on how this was built:** This project is an experiment in *vibe coding* — the practice of building software through a collaborative, conversational workflow with an AI pair programmer (Claude). Every feature, migration, and architectural decision in this codebase was shaped through that dialogue. The goal is not just a working product, but a demonstration that thoughtful AI-assisted development can produce clean, maintainable, production-quality code.
+> **A note on how this was built:** This project is an experiment in *vibe coding* — the practice of building software through a collaborative, conversational workflow with an AI pair programmer. Every feature, migration, and architectural decision in this codebase was shaped through that dialogue. The goal is not just a working product, but a demonstration that thoughtful AI-assisted development can produce clean, maintainable, production-quality code. Development started with Claude Code and migrated to GitHub Copilot in September 2026 — see `AGENTS.md` for the current agent instructions.
 
 ---
 
