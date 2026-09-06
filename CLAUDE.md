@@ -42,6 +42,8 @@ cd web/five-talents-web && npm start       # http://localhost:4200
 
 ## GitHub Issue Conventions
 
+Title prefix and body structure below match `.github/ISSUE_TEMPLATE/feature_request.md` and `bug_report.md` — use `gh issue create --template` where possible, or match those sections by hand rather than freelancing a different header set.
+
 **Title format:** `feat:`, `bug:`, or `chore:` prefix — lowercase, e.g. `feat: attendance tracking`
 
 **Labels:**
