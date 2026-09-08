@@ -70,8 +70,8 @@ public static class DevDataSeeder
             Gender = s.Gender,
             MaritalStatus = s.MaritalStatus,
             Status = s.Status,
-            DateOfBirth = s.DateOfBirth,
-            JoinDate = s.JoinDate,
+            DateOfBirth = s.DateOfBirth is { } dob ? DateTime.SpecifyKind(dob, DateTimeKind.Utc) : null,
+            JoinDate = s.JoinDate is { } joinDate ? DateTime.SpecifyKind(joinDate, DateTimeKind.Utc) : null,
             OrganizationId = orgMap.TryGetValue(s.CampusName, out int orgId) ? orgId : orgMap.Values.First(),
         }).ToList();
 
