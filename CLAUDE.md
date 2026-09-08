@@ -31,7 +31,7 @@ cd web/five-talents-web && npm start       # http://localhost:4200
 ```
 
 > **Note:** `appsettings.Development.json` is gitignored. It defaults to SQLite (`DatabaseProvider: Sqlite`, `Data Source=FiveTalents.db`). Override with `DatabaseProvider: Postgres` and a connection string to use PostgreSQL locally.
-> Docker (`docker-compose.yml`) is used only for Render deployment and self-hosting, not local dev.
+> Docker (`docker-compose.yml`) isn't used for day-to-day local dev (native `dotnet run` + SQLite is faster to iterate on), but it **is** the prod-parity check before a PR — see [E2E Tests (Playwright)](#e2e-tests-playwright). Local dev's SQLite + native process model diverges from what's actually deployed (real Postgres, containerized packaging), and that gap has caused real bugs invisible to local dev alone.
 
 ## Branching & GitHub Workflow
 
@@ -81,7 +81,20 @@ For Angular changes: `npm run build` from `web/five-talents-web`.
 
 Fix any format, build, or test failures before moving to step 2.
 
-### Step 2 — Documentation checklist
+### Step 2 — E2E tests, against both targets (when the API or web app changed)
+
+If the change touches any backend project (`FiveTalents.Api`, `.Application`, `.Domain`, `.Infrastructure`) or the Angular app (`web/five-talents-web`), run the Playwright E2E suite against **both** of the following before proposing a commit:
+
+1. **Local dev target** — native `dotnet run` + `npm start`, SQLite. The default `npm run e2e` flow.
+2. **Docker/Postgres target** — the containerized `docker-compose.yml` stack (real Postgres, prod-built Angular bundle served via nginx). Run the same suite against it via `E2E_BASE_URL`.
+
+Both are required, not either/or: local dev catches regressions fast, but only the containerized run exercises real Postgres and the actual prod-built frontend bundle — the source of bugs local dev structurally cannot see (see the Docker/Postgres gotcha below). As more dependencies pick up a live-vs-test split (mail, auth providers, etc.), this is also where that class of gap gets caught going forward.
+
+See [E2E Tests (Playwright)](#e2e-tests-playwright) below for exact commands for both targets.
+
+Fix any failures before moving to step 3.
+
+### Step 3 — Documentation checklist
 
 Before staging, explicitly ask:
 
@@ -116,7 +129,12 @@ The following member operations require `[Authorize(Roles = "SystemAdmin")]` at 
 - Move organization (`/members/{id}/organization`)
 - Status field in member edit form
 
+### Postgres DateTime Kind (critical for seed/dev data)
+Postgres rejects writing a `DateTime` with `Kind=Unspecified` into a `timestamp with time zone` column — SQLite (local dev's default) doesn't enforce this at all, so a bad value only surfaces when running against real Postgres. Any hardcoded `DateTime` in seed/dev data (`DatabaseSeeder`, `DevDataSeeder`, `DevSeedData`) must go through `DateTime.SpecifyKind(value, DateTimeKind.Utc)` before being assigned to an entity. This exact bug crashed the API on startup once already — see the Docker/Postgres smoke test below, which is what actually catches this class of bug.
+
 ## E2E Tests (Playwright)
+
+### Local dev target
 
 Run E2E tests from `web/five-talents-web/`:
 
@@ -139,6 +157,33 @@ npx playwright test e2e/auth.spec.ts
 > **Ubuntu 26.04:** Playwright's bundled Chromium is not supported on this OS. The config auto-detects `/usr/bin/chromium-browser`. Install it with `sudo apt install chromium-browser` if missing. On CI (Ubuntu 22.04/24.04) Playwright installs its own binary — no extra config needed.
 
 E2E reports land in `playwright-report/` (gitignored). Test artifacts go to `test-results/` (gitignored). Tests use `reuseExistingServer: true` — if the stack is already running, it will be reused rather than restarted. Each test creates data with a unique timestamp and deletes it on completion.
+
+### Docker/Postgres target
+
+Required before a PR whenever the API or web app changed — see [Before Every Commit](#before-every-commit). Runs the same suite against the containerized `docker-compose.yml` stack instead: real Postgres (not SQLite) and the prod-built Angular bundle served through nginx's `/api/` proxy (not the dev server). This is the only place Postgres-specific behavior and container-packaging bugs get exercised at all — nothing in the automated test suite (`dotnet test`) touches Postgres, and native local dev never runs the prod build.
+
+```bash
+# Bring up the full containerized stack (Postgres, Mailpit, api, web).
+# --build picks up any local code changes.
+docker compose up --build -d
+
+# Confirm all four containers are healthy/up and the api didn't crash-loop.
+docker compose ps
+docker compose logs api --tail 50
+
+# Run E2E against the container stack instead of native dotnet run/npm start.
+# Host/port depend on your Docker context (`docker context ls`) — use localhost
+# for a local Docker install, or your remote host's address for a remote context.
+cd web/five-talents-web
+E2E_BASE_URL=http://localhost:4200 npm run e2e
+
+# Tear down — the stack holds no data worth keeping between runs.
+docker compose down -v
+```
+
+`E2E_BASE_URL` auto-forces Playwright to a single worker (see `playwright.config.ts`) — concurrent spec files add enough real network latency against a containerized target to produce flaky UI timing failures that never reproduce against localhost.
+
+If the change touches EF migrations or seed data (`DatabaseSeeder`/`DevDataSeeder`), tear down with `docker compose down -v` *before* the `--build` above too, so migrations apply to a genuinely empty database — an already-migrated container can hide a migration that only fails from a clean state.
 
 ## Code Coverage
 
