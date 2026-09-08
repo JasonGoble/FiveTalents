@@ -25,6 +25,7 @@ Each ADR is numbered sequentially and never edited after acceptance. If a decisi
 | [0015](0015-database-provider-strategy.md) | Database Provider Strategy — SQLite for Dev, PostgreSQL for Production | Accepted |
 | [0016](0016-testing-strategy.md) | Testing Strategy — Unit, Integration, E2E, and CI | Accepted |
 | [0017](0017-docker-postgres-e2e-parity-gate.md) | Docker/Postgres Parity Gate for E2E Tests | Accepted |
+| [0018](0018-render-deployment-health-check.md) | Render Deployment Health Check Before Push | Accepted |
 
 ## Template
 

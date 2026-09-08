@@ -61,7 +61,30 @@ Create a GitHub issue for **every** reported defect, even small ones. The value 
 
 ## Before Every Commit
 
-### Step 1 — Format & build
+### Step 1 — Render deployment health check
+
+`render.yaml` auto-deploys **both** `fivetalents-api` and `fivetalents-web` on every push to `main` (`autoDeploy: yes`, `autoDeployTrigger: commit`), so any PR you're about to merge inherits whatever state production is currently in. Check it via GitHub's Deployments API (no Render API key needed — `gh` is already authenticated):
+
+```bash
+# Preventive: how long since fivetalents-db was last (re)created?
+# Render's free-tier Postgres plan auto-deletes the database ~30 days after
+# creation, which crash-loops the API on its next deploy (no code change needed
+# to trigger it). This has already happened once (2026-09-07).
+DB_DEPLOYED_AT=$(gh api repos/JasonGoble/FiveTalents/deployments --jq '[.[] | select(.environment=="main - fivetalents-db")][0].created_at')
+DAYS_OLD=$(( ( $(date +%s) - $(date -d "$DB_DEPLOYED_AT" +%s) ) / 86400 ))
+echo "fivetalents-db last (re)created $DAYS_OLD days ago ($DB_DEPLOYED_AT)"
+
+# Reactive safety net: did the last fivetalents-api deploy actually succeed?
+DEPLOY_ID=$(gh api repos/JasonGoble/FiveTalents/deployments --jq '[.[] | select(.environment=="main - fivetalents-api")][0].id')
+gh api repos/JasonGoble/FiveTalents/deployments/$DEPLOY_ID/statuses --jq '[.[]][0].state'
+```
+
+If `DAYS_OLD` is at or past ~25 (approaching the 30-day free-tier expiry) or the latest `fivetalents-api` deploy state is `failure`, fix it **before** merging — don't compound a broken production deploy with a new one:
+
+1. Render Dashboard → **Blueprints** → the FiveTalents blueprint → **Manual Sync**. This recreates `fivetalents-db` and rewires `fivetalents-api`'s connection string automatically, then redeploys.
+2. Re-run the check above to confirm `DAYS_OLD` has reset to 0 and the latest status is `success`.
+
+### Step 2 — Format & build
 
 For any .NET changes, run in order:
 
@@ -79,9 +102,9 @@ dotnet test
 
 For Angular changes: `npm run build` from `web/five-talents-web`.
 
-Fix any format, build, or test failures before moving to step 2.
+Fix any format, build, or test failures before moving to step 3.
 
-### Step 2 — E2E tests, against both targets (when the API or web app changed)
+### Step 3 — E2E tests, against both targets (when the API or web app changed)
 
 If the change touches any backend project (`FiveTalents.Api`, `.Application`, `.Domain`, `.Infrastructure`) or the Angular app (`web/five-talents-web`), run the Playwright E2E suite against **both** of the following before proposing a commit:
 
@@ -92,9 +115,9 @@ Both are required, not either/or: local dev catches regressions fast, but only t
 
 See [E2E Tests (Playwright)](#e2e-tests-playwright) below for exact commands for both targets.
 
-Fix any failures before moving to step 3.
+Fix any failures before moving to step 4.
 
-### Step 3 — Documentation checklist
+### Step 4 — Documentation checklist
 
 Before staging, explicitly ask:
 
@@ -206,4 +229,4 @@ The `coverage/` directory is gitignored. The `reportgenerator` tool is declared 
 
 ## Architecture Decision Records
 
-ADRs live in `docs/decisions/`. See `docs/decisions/README.md` for the index. Current range: 0001–0016.
+ADRs live in `docs/decisions/`. See `docs/decisions/README.md` for the index. Current range: 0001–0017.
